@@ -1,0 +1,28 @@
+{
+    "name": "ihipop/taobao-top",
+    "type": "library",
+    "description": "淘宝开放平台 SDK for php7+, Taobao top SDK for laravel",
+    "keywords": [
+        "taobao",
+        "laravel",
+        "sdk",
+        "api"
+    ],
+    "homepage": "https://ihipop.info",
+    "license": "LGPL",
+    "authors": [
+        {
+            "name": "ihipop",
+            "email": "ihipop@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.1.0",
+        "guzzlehttp/psr7": "^1.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "ihipop\\taobaoTop\\": "src/"
+        }
+    }
+}
