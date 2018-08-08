@@ -2,7 +2,7 @@
 
 namespace ihipop\taobaoTop\requests;
 
-use apps\common\support\Str;
+use ihipop\taobaoTop\Str;
 
 abstract class topRequest
 {

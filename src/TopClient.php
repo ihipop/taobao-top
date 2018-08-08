@@ -2,7 +2,7 @@
 
 namespace ihipop\taobaoTop;
 
-use apps\common\support\Str;
+use ihipop\taobaoTop\Str;
 use ihipop\taobaoTop\requests\topRequest;
 
 class TopClient
