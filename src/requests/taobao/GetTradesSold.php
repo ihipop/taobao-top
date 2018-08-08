@@ -31,7 +31,6 @@ use ihipop\taobaoTop\requests\TopRequest;
  * @method getType()
  * @method $this setUseHasNext($name)
  * @method getUseHasNext()
- *
  */
 class GetTradesSold extends TopRequest
 {

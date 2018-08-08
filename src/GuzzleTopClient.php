@@ -30,8 +30,11 @@ class GuzzleTopClient extends TopClient
 
         $results = \GuzzleHttp\Promise\unwrap($requests);
 
-        return array_map(function ($array) {
-            return $array['value'];
-        }, $results);
+        return array_map(
+            function ($array) {
+                return $array['value'];
+            },
+            $results
+        );
     }
 }

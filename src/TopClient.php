@@ -7,24 +7,28 @@ use ihipop\taobaoTop\utility\Str;
 class TopClient
 {
 
-    public    $appKey;
-    public    $appSecret;
+    public $appKey;
+    public $appSecret;
     protected $httpGatewayUri        = "http://gw.api.taobao.com/router/rest";
     protected $httpsGatewayUri       = "https://eco.taobao.com/router/rest";
     protected $httpHostnameOverride  = false;
     protected $httpsHostnameOverride = false;
-    public    $forceHttps            = false;
-    public    $format                = "json";
-    public    $connectTimeout;
-    public    $readTimeout;
-    /** 是否打开入参check**/
-    public    $checkRequest = true;
+    public $forceHttps            = false;
+    public $format                = "json";
+    public $connectTimeout;
+    public $readTimeout;
+    /**
+     * 是否打开入参check
+     **/
+    public $checkRequest = true;
     protected $signMethod   = "md5";
     protected $apiVersion   = "2.0";
     protected $sdkVersion   = "top-sdk-php-20151012";
-    public    $userAgent    = 'top-sdk-php';
+    public $userAgent    = 'top-sdk-php';
     //PSR7 兼容的 HTTP client
-    /** @var $httpClient \GuzzleHttp\Client */
+    /**
+     * @var $httpClient \GuzzleHttp\Client
+     */
     public $httpClient;
 
     public function __construct($httpClient)
@@ -36,7 +40,6 @@ class TopClient
 
     public function onInitialize()
     {
-
     }
 
     /**
@@ -44,7 +47,7 @@ class TopClient
      * $client->setGatewayUri('http://127.0.0.1:8899/router/rest#gw.api.taobao.com');
      * $client->setGatewayUri('https://127.0.0.1:7788/router/rest#eco.taobao.com');
      *
-     * @param      $uri
+     * @param $uri
      * @param null $secure
      *
      * @return $this
@@ -107,7 +110,9 @@ class TopClient
         $publicParas["partner_id"]  = $this->sdkVersion;
 
         foreach ($requests as $key => $request) {
-            /** @var $request  \ihipop\taobaoTop\requests\TopRequest */
+            /**
+ * @var $request  \ihipop\taobaoTop\requests\TopRequest
+*/
             $publicParas["method"]    = $request->getApiName();
             $publicParas["timestamp"] = date("Y-m-d H:i:s");
 
@@ -165,7 +170,9 @@ class TopClient
         }
         if (null != $session) {
             foreach ($requests as $k => $req) {
-                /** @var $req \ihipop\taobaoTop\requests\TopRequest */
+                /**
+ * @var $req \ihipop\taobaoTop\requests\TopRequest
+*/
                 $req->setSession($session);
                 $requests[$k] = $req;
             }
@@ -177,7 +184,9 @@ class TopClient
         $result = [];
         libxml_disable_entity_loader(true);
         foreach ($responses as $key => $response) {
-            /** @var  $response \GuzzleHttp\Psr7\Response */
+            /**
+ * @var  $response \GuzzleHttp\Psr7\Response
+*/
             if ("json" === $this->format) {
                 $decodedResponse = json_decode((string)$response->getBody(), true);
                 if (null !== $decodedResponse) {

@@ -9,13 +9,17 @@ use ihipop\taobaoTop\TopClient;
 class SecurityClient
 {
 
-    /** @var  $topClient \ihipop\taobaoTop\TopClient */
+    /**
+     * @var  $topClient \ihipop\taobaoTop\TopClient
+     */
     private $topClient;
     private $secureRandomNum;
     // randomNumber 为安全码，不是随机数，需要在数据加密菜单，店铺加密模块中 点击生成。已经生成的应用可以在流量证书上方查看到。
     // 见 http://bigdata.taobao.com/doc.htm?docId=106214&docType=1
     private $securityUtil;
-    /** @var $cacheClient \Psr\Cache\CacheItemPoolInterface */
+    /**
+     * @var $cacheClient \Psr\Cache\CacheItemPoolInterface
+     */
     private $cacheClient;
 
     function __construct(TopClient $client, $secureRandomNum)
@@ -38,7 +42,7 @@ class SecurityClient
     /**
      * 密文检索,在秘钥升级场景下兼容查询
      *
-     * @see #search(String, String, String, Long)
+     * @see    #search(String, String, String, Long)
      * @return
      */
     function searchPrevious($data, $type, $session = null)
@@ -49,7 +53,7 @@ class SecurityClient
     /**
      * 密文检索（每个用户单独分配秘钥）
      *
-     * @see #search(String, String, String, Long)
+     * @see    #search(String, String, String, Long)
      * @return
      */
     function search($data, $type, $session = null)
@@ -359,7 +363,9 @@ class SecurityClient
             $time      = time();
             $cacheKey  = $this->buildCacheKey($session, $secretVersion);
             $cacheItem = $this->cacheClient->getItem($cacheKey);
-            /** @var  $secretContext \ihipop\taobaoTop\security\SecretContext */
+            /**
+ * @var  $secretContext \ihipop\taobaoTop\security\SecretContext
+*/
             $secretContext = $cacheItem->get();
 
             if ($secretContext && $secretContext->invalidTime > $time) {
