@@ -22,7 +22,7 @@
 - [x] CACHE客户端可使用任何兼容`PSR6`的客户端实现 如：[symfony/cache](https://github.com/symfony/cache)
 - [x] 移除`Mcrypt`依赖 ,改用`openssl`实现
 - [ ] 官方SDK `Request` 的转换工具 ，转换官方 `SDK` 到重构过的 `Request` 类 
-- [ ] 移除加密解密模块内遗留的无用方法和PHP4遗留 (10%)
+- [ ] 移除加密解密模块`SecurityClient`以及`TopClient`内遗留的无用方法和PHP4遗留 (10%)
 
 # 空闲时候可能会做的功能
 
@@ -43,3 +43,13 @@ composer config prefer-dist true
 ```bash
 composer require ihipop/taobao-top
 ```
+
+## 私有托管
+
+假设你托管的私有仓库url是 `https://example.com/composer/taobao-top.git`
+
+```bash
+composer config repositories.private_repo vcs https://example.com/composer/taobao-top.git
+```
+
+其他照旧
