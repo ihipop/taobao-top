@@ -1,6 +1,6 @@
 <?php
 
-namespace ihipop\taobaoTop;
+namespace ihipop\taobaoTop\client;
 
 class GuzzleTopClient extends TopClient
 {

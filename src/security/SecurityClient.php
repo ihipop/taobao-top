@@ -82,7 +82,6 @@ class SecurityClient
         }
 
         $secretContext = $this->getTopSecretWithCache($session, $version);
-        $this->incrCounter(3, $type, $secretContext, true);
 
         if (empty($secretContext) || empty($secretContext->secret)) {
             return $data;
@@ -364,8 +363,8 @@ class SecurityClient
             $cacheKey  = $this->buildCacheKey($session, $secretVersion);
             $cacheItem = $this->cacheClient->getItem($cacheKey);
             /**
- * @var  $secretContext \ihipop\taobaoTop\security\SecretContext
-*/
+             * @var  $secretContext \ihipop\taobaoTop\security\SecretContext
+             */
             $secretContext = $cacheItem->get();
 
             if ($secretContext && $secretContext->invalidTime > $time) {
