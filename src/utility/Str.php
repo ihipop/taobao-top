@@ -1,11 +1,11 @@
 <?php
 
-namespace ihipop\taobaoTop\utility;
+namespace ihipop\TaobaoTop\utility;
 
 /**
  * Class Str
  *
- * @package ihipop\taobaoTop
+ * @package ihipop\TaobaoTop
  */
 
 class Str

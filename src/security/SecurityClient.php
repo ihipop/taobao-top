@@ -1,16 +1,16 @@
 <?php
 
-namespace ihipop\taobaoTop\security;
+namespace ihipop\TaobaoTop\security;
 
 use Exception;
-use ihipop\taobaoTop\requests\taobao\GetTopSecret;
-use ihipop\taobaoTop\TopClient;
+use ihipop\TaobaoTop\requests\taobao\GetTopSecret;
+use ihipop\TaobaoTop\TopClient;
 
 class SecurityClient
 {
 
     /**
-     * @var  $topClient \ihipop\taobaoTop\TopClient
+     * @var  $topClient \ihipop\TaobaoTop\TopClient
      */
     private $topClient;
     private $secureRandomNum;
@@ -363,7 +363,7 @@ class SecurityClient
             $cacheKey  = $this->buildCacheKey($session, $secretVersion);
             $cacheItem = $this->cacheClient->getItem($cacheKey);
             /**
-             * @var  $secretContext \ihipop\taobaoTop\security\SecretContext
+             * @var  $secretContext \ihipop\TaobaoTop\security\SecretContext
              */
             $secretContext = $cacheItem->get();
 

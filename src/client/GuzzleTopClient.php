@@ -1,6 +1,6 @@
 <?php
 
-namespace ihipop\taobaoTop\client;
+namespace ihipop\TaobaoTop\client;
 
 class GuzzleTopClient extends TopClient
 {
@@ -24,6 +24,7 @@ class GuzzleTopClient extends TopClient
      */
     public function sendRequests($requests)
     {
+        //这里将来改用连接池实现
         foreach ($requests as $key => $request) {
             $requests[$key] = $this->httpClient->sendAsync($request);
         }

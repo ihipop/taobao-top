@@ -1,8 +1,8 @@
 <?php
 
-namespace ihipop\taobaoTop\requests;
+namespace ihipop\TaobaoTop\requests;
 
-use ihipop\taobaoTop\utility\Str;
+use ihipop\TaobaoTop\utility\Str;
 
 abstract class TopRequest
 {

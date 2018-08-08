@@ -1,6 +1,6 @@
 <?php
 
-namespace ihipop\taobaoTop\security;
+namespace ihipop\TaobaoTop\security;
 
 class SecretData
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace ihipop\taobaoTop\requests\taobao;
+namespace ihipop\TaobaoTop\requests\taobao;
 
-use ihipop\taobaoTop\requests\TopRequest;
+use ihipop\TaobaoTop\requests\TopRequest;
 
 /**
  * Class GetTradesSold

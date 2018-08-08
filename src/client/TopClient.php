@@ -1,8 +1,8 @@
 <?php
 
-namespace ihipop\taobaoTop\client;
+namespace ihipop\TaobaoTop\client;
 
-use ihipop\taobaoTop\utility\Str;
+use ihipop\TaobaoTop\utility\Str;
 
 class TopClient
 {
@@ -113,7 +113,7 @@ class TopClient
 
         foreach ($requests as $key => $request) {
             /**
-             * @var $request  \ihipop\taobaoTop\requests\TopRequest
+             * @var $request  \ihipop\TaobaoTop\requests\TopRequest
              */
             $publicParas["method"]    = $request->getApiName();
             $publicParas["timestamp"] = date("Y-m-d H:i:s");
@@ -173,7 +173,7 @@ class TopClient
         if (null != $session) {
             foreach ($requests as $k => $req) {
                 /**
-                 * @var $req \ihipop\taobaoTop\requests\TopRequest
+                 * @var $req \ihipop\TaobaoTop\requests\TopRequest
                  */
                 $req->setSession($session);
                 $requests[$k] = $req;
