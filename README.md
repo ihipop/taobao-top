@@ -49,7 +49,7 @@ composer require ihipop/taobao-top
 假设你托管的私有仓库url是 `https://example.com/composer/taobao-top.git`
 
 ```bash
-composer config repositories.private_repo vcs https://example.com/composer/taobao-top.git
+composer config repositories.taobao-top vcs https://example.com/composer/taobao-top.git
 ```
 
 其他照旧

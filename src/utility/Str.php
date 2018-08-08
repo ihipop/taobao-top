@@ -1,6 +1,6 @@
 <?php
 
-namespace ihipop\taobaoTop;
+namespace ihipop\taobaoTop\utility;
 
 /**
  * Class Str
@@ -254,7 +254,6 @@ class Str
         return static::contains($callback, '@') ? explode('@', $callback, 2) : [$callback, $default];
     }
 
-
     /**
      * Generate a more truly "random" alpha-numeric string.
      *
@@ -399,8 +398,6 @@ class Str
     {
         return mb_convert_case($value, MB_CASE_TITLE, 'UTF-8');
     }
-
-
 
     /**
      * Generate a URL friendly "slug" from a given string.

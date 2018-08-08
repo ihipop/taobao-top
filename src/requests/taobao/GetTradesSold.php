@@ -2,7 +2,7 @@
 
 namespace ihipop\taobaoTop\requests\taobao;
 
-use ihipop\taobaoTop\requests\topRequest;
+use ihipop\taobaoTop\requests\TopRequest;
 
 /**
  * Class GetTradesSold
@@ -33,7 +33,7 @@ use ihipop\taobaoTop\requests\topRequest;
  * @method getUseHasNext()
  *
  */
-class GetTradesSold extends topRequest
+class GetTradesSold extends TopRequest
 {
 
     protected $apiName;

@@ -2,9 +2,9 @@
 
 namespace ihipop\taobaoTop\requests;
 
-use ihipop\taobaoTop\Str;
+use ihipop\taobaoTop\utility\Str;
 
-abstract class topRequest
+abstract class TopRequest
 {
 
     public    $requireHttps         = false;//是否必须使用https借口

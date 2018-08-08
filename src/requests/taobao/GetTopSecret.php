@@ -2,7 +2,7 @@
 
 namespace ihipop\taobaoTop\requests\taobao;
 
-use ihipop\taobaoTop\requests\topRequest;
+use ihipop\taobaoTop\requests\TopRequest;
 
 /**
  * Class GetSoldTrades
@@ -14,7 +14,7 @@ use ihipop\taobaoTop\requests\topRequest;
  * @method $this setSecretVersion($value)
  * @method getSecretVersion()
  */
-class GetTopSecret extends topRequest
+class GetTopSecret extends TopRequest
 {
 
     public    $requireHttps = true;

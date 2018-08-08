@@ -2,8 +2,7 @@
 
 namespace ihipop\taobaoTop;
 
-use ihipop\taobaoTop\Str;
-use ihipop\taobaoTop\requests\topRequest;
+use ihipop\taobaoTop\utility\Str;
 
 class TopClient
 {
@@ -23,9 +22,22 @@ class TopClient
     protected $signMethod   = "md5";
     protected $apiVersion   = "2.0";
     protected $sdkVersion   = "top-sdk-php-20151012";
+    public    $userAgent    = 'top-sdk-php';
     //PSR7 兼容的 HTTP client
     /** @var $httpClient \GuzzleHttp\Client */
     public $httpClient;
+
+    public function __construct($httpClient)
+    {
+        $this->httpClient = $httpClient;
+        // 执行初始化事件
+        $this->onInitialize();
+    }
+
+    public function onInitialize()
+    {
+
+    }
 
     /**
      * 支持使用本地映射的时候 使用 如下代码自定义网关API/HOST头 目前不设置host没影响 但是不代表以后没影响
@@ -64,20 +76,6 @@ class TopClient
         return $this->appKey;
     }
 
-    public function __construct($httpClient)
-    {
-        if (!$httpClient) {
-            $this->httpClient = new \GuzzleHttp\Client(
-                [
-                    'verify'  => false,
-                    'timeout' => 30,
-                ]
-            );
-        } else {
-            $this->httpClient = $httpClient;
-        }
-    }
-
     protected function signPara($params)
     {
         ksort($params);
@@ -94,11 +92,6 @@ class TopClient
         return strtoupper(md5($stringToBeSigned));
     }
 
-    protected function logCommunicationError($apiName, $requestUrl, $errorCode, $responseTxt)
-    {
-        return false;
-    }
-
     /**
      * @param array $requests
      *
@@ -113,8 +106,8 @@ class TopClient
         $publicParas["sign_method"] = $this->signMethod;
         $publicParas["partner_id"]  = $this->sdkVersion;
 
-        $responses = [];
         foreach ($requests as $key => $request) {
+            /** @var $request  \ihipop\taobaoTop\requests\TopRequest */
             $publicParas["method"]    = $request->getApiName();
             $publicParas["timestamp"] = date("Y-m-d H:i:s");
 
@@ -128,36 +121,39 @@ class TopClient
                 $gwUrl            = $this->httpsGatewayUri;
                 $hostNameOverRide = $this->httpsHostnameOverride;
             }
-            $responses[$key] = $this->sendRequest($request, $gwUrl, $hostNameOverRide);
+            $psr7Request = (new \GuzzleHttp\Psr7\Request($request->requestMethod, $gwUrl))
+                //->withMethod($request->requestMethod)
+                //->withUri((new Uri($this->gatewayUrl)))
+                ->withHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
+                ->withHeader('user-agent', $this->userAgent)
+                ->withBody(\GuzzleHttp\Psr7\stream_for(http_build_query($request->getRequestParas())));
+
+            if ($hostNameOverRide) {
+                $psr7Request = $psr7Request->withHeader('host', $hostNameOverRide);
+            }
+            $requests[$key] = $psr7Request;
         }
 
-        return $responses;
+        return $this->sendRequests($requests);
     }
 
     /**
      * 请求方法为PSR7兼容的http客户端设计 ，如果客户端本身是PSR7兼容的,且有send($psr7Request)方法，无需覆盖此方法，
      * 直接改变 $this->httpClient 指向即可,抛出异常的类型，可能随着实际指向的http客户端的实现而变化
+     * //     *
+     * //     *
+     * //     * @return mixed|\Psr\Http\Message\ResponseInterface
      *
-     * @param \ihipop\taobaoTop\requests\topRequest                 $request
-     * @param                                                       $uri
-     * @param null                                                  $hostname
-     *
-     * @return mixed|\Psr\Http\Message\ResponseInterface
      * @throws \GuzzleHttp\Exception\GuzzleException |\RuntimeException |\Exception
      */
-    protected function sendRequest(topRequest $request, $uri, $hostname = null)
+    protected function sendRequests($requests)
     {
-        $psr7Request = (new \GuzzleHttp\Psr7\Request($request->requestMethod, $uri))
-            //->withMethod($request->requestMethod)
-            //->withUri((new Uri($this->gatewayUrl)))
-            ->withHeader('Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
-            ->withHeader('user-agent', 'top-sdk-php')
-            ->withBody(\GuzzleHttp\Psr7\stream_for(http_build_query($request->getRequestParas())));
-        if ($hostname) {
-            $psr7Request = $psr7Request->withHeader('host', $hostname);
+        $responses = [];
+        foreach ($requests as $key => $psr7Request) {
+            $responses[$key] = $this->httpClient->send($psr7Request);
         }
 
-        return $this->httpClient->send($psr7Request);
+        return $responses;
     }
 
     public function execute($requests, $session = null)
@@ -169,7 +165,7 @@ class TopClient
         }
         if (null != $session) {
             foreach ($requests as $k => $req) {
-                /** @var $req \ihipop\taobaoTop\requests\topRequest */
+                /** @var $req \ihipop\taobaoTop\requests\TopRequest */
                 $req->setSession($session);
                 $requests[$k] = $req;
             }

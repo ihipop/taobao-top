@@ -29,5 +29,8 @@
         "psr-4": {
             "ihipop\\taobaoTop\\": "src/"
         }
+    },
+    "require-dev": {
+        "guzzlehttp/guzzle": "^6.3"
     }
 }
