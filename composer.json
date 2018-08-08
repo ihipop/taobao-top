@@ -1,7 +1,7 @@
 {
     "name": "ihipop/taobao-top",
     "type": "library",
-    "description": "淘宝开放平台 SDK for php7+, Taobao top SDK for laravel",
+    "description": "淘宝开放平台 SDK for php7+, Taobao top SDK for PHP7",
     "keywords": [
         "taobao",
         "laravel",
