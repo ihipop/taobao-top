@@ -17,7 +17,7 @@ use ihipop\TaobaoTop\requests\TopRequest;
 class GetTopSecret extends TopRequest
 {
 
-    public $requireHttps = true;
+    public    $requireHttps = true;
     protected $apiName;
     protected $paramKeys    = [
         'customerUserId',
