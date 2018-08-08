@@ -4,11 +4,11 @@
     "description": "淘宝开放平台 SDK for php7+, Taobao top SDK for PHP7",
     "keywords": [
         "taobao",
-        "laravel",
+        "top",
         "sdk",
         "api"
     ],
-    "homepage": "https://ihipop.info",
+    "homepage": "https://github.com/ihipop/taobao-top",
     "license": "LGPL-3.0+",
     "authors": [
         {
@@ -19,6 +19,11 @@
     "require": {
         "php": ">=7.1.0",
         "guzzlehttp/psr7": "^1.4"
+    },
+    "suggest": {
+        "guzzlehttp/guzzle": "经典的兼容PSR7的HTTP客户端",
+        "swlib/saber": "Swoole下支持协程的兼容PSR7的HTTP客户端",
+        "symfony/cache": "兼容PSR6的Cache实现"
     },
     "autoload": {
         "psr-4": {
