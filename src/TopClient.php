@@ -31,8 +31,10 @@ class TopClient
      */
     public $httpClient;
 
-    public function __construct($httpClient)
+    public function __construct($appKey, $appSecret, $httpClient)
     {
+        $this->appKey     = $appKey;
+        $this->appSecret  = $appSecret;
         $this->httpClient = $httpClient;
         // 执行初始化事件
         $this->onInitialize();
@@ -47,7 +49,7 @@ class TopClient
      * $client->setGatewayUri('http://127.0.0.1:8899/router/rest#gw.api.taobao.com');
      * $client->setGatewayUri('https://127.0.0.1:7788/router/rest#eco.taobao.com');
      *
-     * @param $uri
+     * @param      $uri
      * @param null $secure
      *
      * @return $this
@@ -111,8 +113,8 @@ class TopClient
 
         foreach ($requests as $key => $request) {
             /**
- * @var $request  \ihipop\taobaoTop\requests\TopRequest
-*/
+             * @var $request  \ihipop\taobaoTop\requests\TopRequest
+             */
             $publicParas["method"]    = $request->getApiName();
             $publicParas["timestamp"] = date("Y-m-d H:i:s");
 
@@ -171,8 +173,8 @@ class TopClient
         if (null != $session) {
             foreach ($requests as $k => $req) {
                 /**
- * @var $req \ihipop\taobaoTop\requests\TopRequest
-*/
+                 * @var $req \ihipop\taobaoTop\requests\TopRequest
+                 */
                 $req->setSession($session);
                 $requests[$k] = $req;
             }
@@ -185,8 +187,8 @@ class TopClient
         libxml_disable_entity_loader(true);
         foreach ($responses as $key => $response) {
             /**
- * @var  $response \GuzzleHttp\Psr7\Response
-*/
+             * @var  $response \GuzzleHttp\Psr7\Response
+             */
             if ("json" === $this->format) {
                 $decodedResponse = json_decode((string)$response->getBody(), true);
                 if (null !== $decodedResponse) {

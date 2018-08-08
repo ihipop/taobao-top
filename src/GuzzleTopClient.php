@@ -5,7 +5,7 @@ namespace ihipop\taobaoTop;
 class GuzzleTopClient extends TopClient
 {
 
-    public function __construct()
+    public function __construct($appKey, $appSecret)
     {
         $httpClient = new \GuzzleHttp\Client(
             [
@@ -13,7 +13,7 @@ class GuzzleTopClient extends TopClient
                 'timeout' => 30,
             ]
         );
-        parent::__construct($httpClient);
+        parent::__construct($appKey, $appSecret, $httpClient);
     }
 
     /**
@@ -28,13 +28,6 @@ class GuzzleTopClient extends TopClient
             $requests[$key] = $this->httpClient->sendAsync($request);
         }
 
-        $results = \GuzzleHttp\Promise\unwrap($requests);
-
-        return array_map(
-            function ($array) {
-                return $array['value'];
-            },
-            $results
-        );
+        return \GuzzleHttp\Promise\unwrap($requests);
     }
 }
