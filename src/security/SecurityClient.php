@@ -3,14 +3,14 @@
 namespace ihipop\TaobaoTop\security;
 
 use Exception;
+use ihipop\TaobaoTop\client\TopClient;
 use ihipop\TaobaoTop\requests\taobao\GetTopSecret;
-use ihipop\TaobaoTop\TopClient;
 
 class SecurityClient
 {
 
     /**
-     * @var  $topClient \ihipop\TaobaoTop\TopClient
+     * @var  $topClient \ihipop\TaobaoTop\client\TopClient
      */
     private $topClient;
     private $secureRandomNum;
