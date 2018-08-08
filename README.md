@@ -27,3 +27,19 @@
 # 空闲时候可能会做的功能
 
 - [ ] 在提供异步情景模型的情况下恢复官方SDK的统计功能，并设置可选开关 
+
+# 安装
+
+本项目正在开发中，你可能需要执行`一次`如下的composer设置才能正常安装开发版
+
+```bash
+composer config prefer-stable true
+composer config minimum-stability dev
+composer config prefer-dist true 
+```
+
+然后
+
+```bash
+composer require ihipop/taobao-top
+```
