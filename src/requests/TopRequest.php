@@ -7,13 +7,14 @@ use ihipop\TaobaoTop\utility\Str;
 abstract class TopRequest
 {
 
-    public    $requireHttps         = false;//是否必须使用https借口
+    public $requireHttps         = false;//是否必须使用https借口
     protected $paramKeys            = [];
     protected $commaSeparatedParams = [];
     protected $apiParas             = [];
     protected $apiName;
-    public    $requestMethod        = 'POST';
-    public    $extraParas           = [];
+    public $requestMethod        = 'POST';
+    public $extraParas           = [];
+    public $encryptedFields;
 
     public function __construct()
     {

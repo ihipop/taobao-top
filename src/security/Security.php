@@ -25,7 +25,6 @@ class Security
 
     public static function decrypt($sStr, $key)
     {
-
         $key = base64_decode($key);
 
         $decrypted = openssl_decrypt(base64_decode($sStr), 'AES-128-CBC', $key, OPENSSL_RAW_DATA, self::$iv);
