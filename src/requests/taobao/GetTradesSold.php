@@ -7,29 +7,29 @@ use ihipop\TaobaoTop\requests\TopRequest;
 /**
  * Class GetTradesSold
  *
- * @method $this setBuyerNick($name)
+ * @method $this setBuyerNick($value)
  * @method getBuyerNick()
- * @method $this setEndCreated($name)
+ * @method $this setEndCreated($value)
  * @method getEndCreated()
- * @method $this setExtType($name)
+ * @method $this setExtType($value)
  * @method getExtType()
- * @method $this setFields($name)
+ * @method $this setFields($value)
  * @method getFields()
- * @method $this setPageNo($name)
+ * @method $this setPageNo($value)
  * @method getPageNo()
- * @method $this setPageSize($name)
+ * @method $this setPageSize($value)
  * @method getPageSize()
- * @method $this setRateStatus($name)
+ * @method $this setRateStatus($value)
  * @method getRateStatus()
- * @method $this setStartCreated($name)
+ * @method $this setStartCreated($value)
  * @method getStartCreated()
- * @method $this setStatus($name)
+ * @method $this setStatus($value)
  * @method getStatus()
- * @method $this setTag($name)
+ * @method $this setTag($value)
  * @method getTag()
- * @method $this setType($name)
+ * @method $this setType($value)
  * @method getType()
- * @method $this setUseHasNext($name)
+ * @method $this setUseHasNext($value)
  * @method getUseHasNext()
  */
 class GetTradesSold extends TopRequest
@@ -49,6 +49,9 @@ class GetTradesSold extends TopRequest
         "tag",
         "type",
         "useHasNext",
+    ];
+    protected $defaultParamValues   = [
+        'pageNo' => 1,
     ];
     protected $commaSeparatedParams = ['fields', 'type'];
     //    public    $encryptedFields      = [

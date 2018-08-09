@@ -7,14 +7,15 @@ use ihipop\TaobaoTop\utility\Str;
 abstract class TopRequest
 {
 
-    public $requireHttps         = false;//是否必须使用https借口
+    public    $requireHttps         = false;//是否必须使用https借口
     protected $paramKeys            = [];
+    protected $defaultParamValues   = [];
     protected $commaSeparatedParams = [];
     protected $apiParas             = [];
     protected $apiName;
-    public $requestMethod        = 'POST';
-    public $extraParas           = [];
-    public $encryptedFields;
+    public    $requestMethod        = 'POST';
+    public    $extraParas           = [];
+    public    $encryptedFields;
 
     public function __construct()
     {
@@ -28,6 +29,11 @@ abstract class TopRequest
             $class          = explode('_', Str::snake($class, '_'));
             $class[]        = array_shift($class);//把动作名词放尾部
             $this->apiName  = ($lastNamespace ? $lastNamespace . '.' : '') . implode('.', $class);
+        }
+        if (!empty($this->defaultParamValues)) {
+            foreach ($this->defaultParamValues as $para => $value) {
+                $this->apiParas[Str::snake($para)] = (string)$value;
+            }
         }
     }
 
@@ -47,11 +53,10 @@ abstract class TopRequest
 
     public function __set($name, $value)
     {
-
         if (in_array($name, $this->commaSeparatedParams)) {
             return $this->setCommaSeparatedParam($name, $value);
         } elseif (in_array($name, $this->paramKeys)) {
-            $this->apiParas[Str::snake($name)] = $value;
+            $this->apiParas[Str::snake($name)] = (string)$value;
 
             return $this;
         }
@@ -63,7 +68,7 @@ abstract class TopRequest
         if (in_array($name, $this->commaSeparatedParams)) {
             return $this->getCommaSeparatedParam($name);
         } elseif (in_array($name, $this->paramKeys)) {
-            return $this->$name;
+            return $this->apiParas[Str::snake($name)] ?? null;
         }
         throw new \Exception('指定属性不存在: ' . $name);
     }
