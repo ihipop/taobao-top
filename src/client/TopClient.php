@@ -9,24 +9,24 @@ use ihipop\TaobaoTop\utility\Str;
 class TopClient
 {
 
-    public $appKey;
-    public $appSecret;
+    public    $appKey;
+    public    $appSecret;
     protected $httpGatewayUri        = "http://gw.api.taobao.com/router/rest";
     protected $httpsGatewayUri       = "https://eco.taobao.com/router/rest";
     protected $httpHostnameOverride  = false;
     protected $httpsHostnameOverride = false;
-    public $forceHttps            = false;
-    public $format                = "json";
-    public $connectTimeout;
-    public $readTimeout;
+    public    $forceHttps            = false;
+    public    $format                = "json";
+    public    $connectTimeout;
+    public    $readTimeout;
     /**
      * 是否打开入参check
      **/
-    public $checkRequest = true;
+    public    $checkRequest = true;
     protected $signMethod   = "md5";
     protected $apiVersion   = "2.0";
     protected $sdkVersion   = "top-sdk-php-20151012";
-    public $userAgent    = 'top-sdk-php';
+    public    $userAgent    = 'top-sdk-php';
     protected $autoDecrypt  = true;
     /** @var $securityClient SecurityClient */
     protected $securityClient;
@@ -51,9 +51,7 @@ class TopClient
 
     public function initSecurityClient($secureNumber, $cacheClient = null)
     {
-        if (!$this->securityClient) {
-            $this->securityClient = (new SecurityClient($this, $secureNumber))->setCacheClient($cacheClient);
-        }
+        $this->securityClient = (new SecurityClient($this, $secureNumber))->setCacheClient($cacheClient);
 
         return $this;
     }
