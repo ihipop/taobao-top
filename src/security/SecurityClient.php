@@ -37,6 +37,8 @@ class SecurityClient
     function setCacheClient(\Psr\Cache\CacheItemPoolInterface $cache)
     {
         $this->cacheClient = $cache;
+
+        return $this;
     }
 
     /**
@@ -309,7 +311,7 @@ class SecurityClient
             return $session;
         }
 
-        return 'top.cache.security' . $session . '_' . $secretVersion;
+        return 'top.cache.security.' . $session . '_' . $secretVersion . '_' . md5(SecretContext::class);
     }
 
     function generateCustomerSession($userId)

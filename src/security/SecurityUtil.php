@@ -23,11 +23,13 @@ class SecurityUtil
         }
 
         $this->SEPARATOR_CHAR_MAP['nick']          = NICK_SEPARATOR_CHAR;
+        $this->SEPARATOR_CHAR_MAP['name']          = NICK_SEPARATOR_CHAR;
         $this->SEPARATOR_CHAR_MAP['simple']        = NICK_SEPARATOR_CHAR;
         $this->SEPARATOR_CHAR_MAP['receiver_name'] = NICK_SEPARATOR_CHAR;
         $this->SEPARATOR_CHAR_MAP['search']        = NICK_SEPARATOR_CHAR;
         $this->SEPARATOR_CHAR_MAP['normal']        = NORMAL_SEPARATOR_CHAR;
-        $this->SEPARATOR_CHAR_MAP['phone']         = PHONE_SEPARATOR_CHAR;
+        $this->SEPARATOR_CHAR_MAP['phone']         = NICK_SEPARATOR_CHAR;
+        $this->SEPARATOR_CHAR_MAP['mobile']        = PHONE_SEPARATOR_CHAR;
     }
 
     /*
@@ -225,9 +227,9 @@ class SecurityUtil
         $last8Number  = substr($data, $len - 8, $len);
 
         return $separator . $prefixNumber . $separator . Security::encrypt(
-                $last8Number,
-                $secretContext->secret
-            ) . $separator . $secretContext->secretVersion . $separator;
+            $last8Number,
+            $secretContext->secret
+        ) . $separator . $secretContext->secretVersion . $separator;
     }
 
     /*
@@ -532,9 +534,9 @@ class SecurityUtil
         $last4Number = substr($data, $dataLength - 4, $dataLength);
 
         return $separator . $this->hmacMD5EncryptToBase64($last4Number, $secretContext->secret) . $separator . Security::encrypt(
-                $data,
-                $secretContext->secret
-            ) . $separator . $secretContext->secretVersion . $separator . $separator;
+            $data,
+            $secretContext->secret
+        ) . $separator . $secretContext->secretVersion . $separator . $separator;
     }
 
     function encryptNormalIndex($data, $compressLen, $slideSize, $separator, $secretContext)
@@ -546,9 +548,9 @@ class SecurityUtil
         }
 
         return $separator . Security::encrypt(
-                $data,
-                $secretContext->secret
-            ) . $separator . $builder . $separator . $secretContext->secretVersion . $separator . $separator;
+            $data,
+            $secretContext->secret
+        ) . $separator . $builder . $separator . $secretContext->secretVersion . $separator . $separator;
     }
 
     function getArrayValue($array, $key, $default)

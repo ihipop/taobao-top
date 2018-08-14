@@ -2,6 +2,8 @@
 
 namespace ihipop\TaobaoTop\client;
 
+use ihipop\TaobaoTop\security\SecurityClient;
+use ihipop\TaobaoTop\utility\Arr;
 use ihipop\TaobaoTop\utility\Str;
 
 class TopClient
@@ -25,6 +27,9 @@ class TopClient
     protected $apiVersion   = "2.0";
     protected $sdkVersion   = "top-sdk-php-20151012";
     public    $userAgent    = 'top-sdk-php';
+    protected $autoDecrypt  = true;
+    /** @var $securityClient SecurityClient */
+    protected $securityClient;
     //PSR7 兼容的 HTTP client
     /**
      * @var $httpClient \GuzzleHttp\Client
@@ -42,6 +47,18 @@ class TopClient
 
     public function onInitialize()
     {
+    }
+
+    public function initSecurityClient($secureNumber, $cacheClient = null)
+    {
+        $this->securityClient = (new SecurityClient($this, $secureNumber))->setCacheClient($cacheClient);
+
+        return $this;
+    }
+
+    public function getSecurityClient()
+    {
+        return $this->securityClient;
     }
 
     /**
@@ -83,6 +100,7 @@ class TopClient
 
     protected function signPara($params)
     {
+        unset($params['sign']);
         ksort($params);
 
         $stringToBeSigned = $this->appSecret;
@@ -102,15 +120,18 @@ class TopClient
      *
      * @return array
      */
-    protected function performRequests(array $requests = [])
+    protected function performRequests(array $requests = [], $hangOnError = false)
     {
+        if ($this->autoDecrypt && !$this->securityClient) {
+            throw new \Exception('自动解密已打开，但是未指定安全客户端');
+        }
         $publicParas                = [];
         $publicParas["app_key"]     = $this->appKey;
         $publicParas["v"]           = $this->apiVersion;
         $publicParas["format"]      = $this->format;
         $publicParas["sign_method"] = $this->signMethod;
         $publicParas["partner_id"]  = $this->sdkVersion;
-
+        $originalRequest            = $requests;
         foreach ($requests as $key => $request) {
             /**
              * @var $request  \ihipop\TaobaoTop\requests\TopRequest
@@ -119,6 +140,7 @@ class TopClient
             $publicParas["timestamp"] = date("Y-m-d H:i:s");
 
             $request->extraParas = array_merge((array)$request->extraParas, $publicParas);
+
             //签名
             $request->setSign($this->signPara($request->getRequestParas()));
 
@@ -141,7 +163,87 @@ class TopClient
             $requests[$key] = $psr7Request;
         }
 
-        return $this->sendRequests($requests);
+        $responses = $this->sendRequests($requests);
+
+        $results = [];
+        libxml_disable_entity_loader(true);
+        foreach ($responses as $key => $response) {
+            $result = null;
+            /**
+             * @var  $response \GuzzleHttp\Psr7\Response
+             */
+            if ("json" === $this->format) {
+                $decodedResponse = json_decode((string)$response->getBody(), true);
+                if (null !== $decodedResponse) {
+                    $result = current($decodedResponse);
+                } else {
+                    throw new \Exception('Invalid Json Response');
+                }
+            } elseif ("xml" === $this->format) {
+                $decodedResponse = @simplexml_load_string((string)$response->getBody());
+                if (false !== $decodedResponse) {
+                    $result = json_decode(json_encode($decodedResponse), true);//把里面的Object对象转乘数组
+                } else {
+                    throw new \Exception('Invalid XML Response');
+                }
+            }
+
+            if ($hangOnError && !empty($result['code'])) {
+                throw new \Exception('请求的时候发生了错误: ' . json_encode($result), $result['code']);
+            }
+
+            if ($this->autoDecrypt) {
+                /** @var  $request \ihipop\TaobaoTop\requests\TopRequest */
+                $request = $originalRequest[$key];
+                $result  = $this->decryptRequest($result, $request);
+            }
+            $results[$key] = $result;
+        }
+
+        return $results;
+    }
+
+    /**
+     * 根据请求的自动解密
+     *
+     * @param                                       $response
+     * @param \ihipop\TaobaoTop\requests\TopRequest $request
+     *
+     * @return mixed
+     */
+    protected function decryptRequest($response, \ihipop\TaobaoTop\requests\TopRequest $request)
+    {
+        $fieldsConfig = $request->encryptedFields;
+        $session      = $request->getSession();
+        if (empty($fieldsConfig)) {
+            return $response;
+        }
+        static $decrypt;
+        if (!$decrypt) {
+            $decrypt = function ($fieldsConfig, $filteredResponse) use (&$decrypt, $session) {
+                foreach ($fieldsConfig as $key => $value) {
+                    if ($key === '@') {//表示原数据的对应子节点是个数组 如：trades.trade[]
+                        foreach ($filteredResponse as $subResponseKey => $singleSubResponse) {
+                            Arr::set($filteredResponse, $subResponseKey, $decrypt($value, $singleSubResponse));
+                        }
+                    } elseif (is_array($value)) {//表示原数据的对应子节点是直接就是字段
+                        $subResponse = Arr::get($filteredResponse, $key);
+                        if ($subResponse) {
+                            Arr::set($filteredResponse, $key, $decrypt($value, $subResponse));
+                        }
+                    } elseif (isset($filteredResponse[$key])) {
+                        //                        $filedName = $key;
+                        //                        $type      = $value;
+                        $decrypted = $this->securityClient->decrypt($filteredResponse[$key], $value, $session);
+                        Arr::set($filteredResponse, $key, $decrypted);
+                    }
+                }
+
+                return $filteredResponse;
+            };
+        }
+
+        return $decrypt($fieldsConfig, $response);
     }
 
     /**
@@ -182,34 +284,10 @@ class TopClient
 
         $responses = $this->performRequests($requests);
 
-        //        return var_dump((string)$responses[0]->getBody());
-        $result = [];
-        libxml_disable_entity_loader(true);
-        foreach ($responses as $key => $response) {
-            /**
-             * @var  $response \GuzzleHttp\Psr7\Response
-             */
-            if ("json" === $this->format) {
-                $decodedResponse = json_decode((string)$response->getBody(), true);
-                if (null !== $decodedResponse) {
-                    $result[$key] = current($decodedResponse);
-                } else {
-                    throw new \Exception('Invalid Json Response');
-                }
-            } elseif ("xml" === $this->format) {
-                $decodedResponse = @simplexml_load_string((string)$response->getBody());
-                if (false !== $decodedResponse) {
-                    $result[$key] = json_decode(json_encode($decodedResponse), true);//把里面的Object对象转乘数组
-                } else {
-                    throw new \Exception('Invalid XML Response');
-                }
-            }
-        }
-
         if ($returnFirst) {
-            return current($result);
+            return current($responses);
         }
 
-        return $result;
+        return $responses;
     }
 }
