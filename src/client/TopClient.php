@@ -122,9 +122,6 @@ class TopClient
      */
     protected function performRequests(array $requests = [], $hangOnError = false)
     {
-        if ($this->autoDecrypt && !$this->securityClient) {
-            throw new \Exception('自动解密已打开，但是未指定安全客户端');
-        }
         $publicParas                = [];
         $publicParas["app_key"]     = $this->appKey;
         $publicParas["v"]           = $this->apiVersion;
@@ -217,6 +214,9 @@ class TopClient
         $session      = $request->getSession();
         if (empty($fieldsConfig)) {
             return $response;
+        }
+        if (!$this->securityClient) {
+            throw new \Exception('解密必须指定安全客户端');
         }
         static $decrypt;
         if (!$decrypt) {
