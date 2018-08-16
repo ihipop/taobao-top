@@ -9,8 +9,9 @@ class GuzzleTopClient extends TopClient
     {
         $httpClient = new \GuzzleHttp\Client(
             [
-                'verify'  => false,
-                'timeout' => 30,
+                'verify'          => false,
+                'timeout'         => 30,
+                'connect_timeout' => 30,
             ]
         );
         parent::__construct($appKey, $appSecret, $httpClient);

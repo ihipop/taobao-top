@@ -47,6 +47,7 @@ class TopClient
 
     public function onInitialize()
     {
+        
     }
 
     public function initSecurityClient($secureNumber, $cacheClient = null)
