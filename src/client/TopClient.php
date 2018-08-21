@@ -47,7 +47,17 @@ class TopClient
 
     public function onInitialize()
     {
-        
+        try {
+            if (function_exists('env')) {
+                if (env('TAOBAO_TOP_GATEWAY_HTTP')) {
+                    $this->setGatewayUri(env('TAOBAO_TOP_GATEWAY_HTTP'));
+                }
+                if (env('TAOBAO_TOP_GATEWAY_HTTPS')) {
+                    $this->setGatewayUri(env('TAOBAO_TOP_GATEWAY_HTTPS'));
+                }
+            }
+        } catch (\Exception $e) {
+        };
     }
 
     public function initSecurityClient($secureNumber, $cacheClient = null)
