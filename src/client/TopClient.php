@@ -47,6 +47,9 @@ class TopClient
 
     public function onInitialize()
     {
+        if (!$this->appKey || !$this->appSecret) {
+            throw new \InvalidArgumentException('APP KEY和密钥不能为空');
+        }
         try {
             if (function_exists('env')) {
                 if (env('TAOBAO_TOP_GATEWAY_HTTP')) {
