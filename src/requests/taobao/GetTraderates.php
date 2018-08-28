@@ -31,23 +31,30 @@ use ihipop\TaobaoTop\requests\TopRequest;
  * @method getNumIid()
  *
  */
-class GetTradeRates extends TopRequest
+class GetTraderates extends TopRequest
 {
 
     protected $commaSeparatedParams = ['fields'];
     protected $apiName;
     protected $paramKeys            = [
         'fields',
-        'rate_type',
+        'rateType',
         'role',
         'result',
-        'page_no',
-        'page_size',
-        'start_date',
-        'end_date',
+        'pageNo',
+        'pageSize',
+        'startDate',
+        'endDate',
         'tid',
-        'use_has_next',
-        'num_iid',
+        'useHasNext',
+        'numIid',
+    ];
+    public    $encryptedFields      = [
+        'trade_rates.trade_rate' => [
+            '@' => [//订单1
+                'nick' => 'nick',
+            ],
+        ],
     ];
 
     public function check()

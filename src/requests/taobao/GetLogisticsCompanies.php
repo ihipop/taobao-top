@@ -23,7 +23,7 @@ class GetLogisticsCompanies extends TopRequest
     protected $apiName;
     protected $paramKeys = [
         'fields',
-        'is_recommended',
-        'order_mode',
+        'isRecommended',
+        'orderMode',
     ];
 }
