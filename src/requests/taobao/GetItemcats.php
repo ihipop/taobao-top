@@ -14,7 +14,7 @@ use ihipop\TaobaoTop\requests\TopRequest;
  * @method $this setParentCid($value)
  * @method getParentCid()
  */
-class GetTaobaoItemcats extends TopRequest
+class GetItemcats extends TopRequest
 {
 
     protected $apiName;
