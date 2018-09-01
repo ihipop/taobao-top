@@ -34,7 +34,7 @@ class SecurityClient
     /**
      * 设置缓存处理器
      */
-    function setCacheClient(\mix\client\RedisPersistent $cache)
+    function setCacheClient($cache)
     {
         $this->cacheClient = $cache;
 
