@@ -481,7 +481,7 @@ class SecurityClient
         $now      = time();
         $response = $this->topClient->execute($request);
         if ((string)($response['code'] ?? 0) != (string)0) {
-            throw new Exception($response['msg']);
+            throw new Exception($response['sub_msg'] ?? $response['msg'], $response['sub_code'] ?? $response['code']);
         }
 
         $secretContext                 = new SecretContext();
