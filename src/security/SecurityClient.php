@@ -34,7 +34,7 @@ class SecurityClient
     /**
      * 设置缓存处理器
      */
-    function setCacheClient(\Psr\Cache\CacheItemPoolInterface $cache)
+    function setCacheClient(\mix\client\RedisPersistent $cache)
     {
         $this->cacheClient = $cache;
 
@@ -360,29 +360,26 @@ class SecurityClient
      */
     function getTopSecretWithCache($session, $secretVersion)
     {
-        if ($this->cacheClient) {
-            $time      = time();
-            $cacheKey  = $this->buildCacheKey($session, $secretVersion);
-            $cacheItem = $this->cacheClient->getItem($cacheKey);
-            /**
-             * @var  $secretContext \ihipop\TaobaoTop\security\SecretContext
-             */
-            $secretContext = $cacheItem->get();
+        $cacheKey  = $this->buildCacheKey($session, $secretVersion);
+        $cacheItem = null;
 
-            if ($secretContext && $secretContext->invalidTime > $time) {
-                return $secretContext;
+        if ($this->cacheClient) {
+            $cacheItem = $this->cacheClient->get($cacheKey);
+            if (!empty($cacheItem)) {
+                $cacheItem = unserialize($cacheItem);
+                if ($cacheItem->invalidTime > time()) {
+                    return $cacheItem;
+                }
             }
         }
 
-        $secretContext = $this->getTopSecret($session, $secretVersion);
+        $cacheItem = $this->getTopSecret($session, $secretVersion);
 
         if ($this->cacheClient) {
-            $secretContext->cacheKey = $cacheKey;
-            $cacheItem->set($secretContext)->expiresAfter($secretContext->invalidTime - time());
-            $this->cacheClient->save($cacheItem);
+            $this->cacheClient->setex($cacheKey, $cacheItem->invalidTime - time(), serialize($cacheItem));
         }
 
-        return $secretContext;
+        return $cacheItem;
     }
 
     function incrCounter($op, $type, $secretContext, $flush)
