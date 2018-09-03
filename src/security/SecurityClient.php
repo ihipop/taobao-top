@@ -305,10 +305,10 @@ class SecurityClient
     function buildCacheKey($session, $secretVersion)
     {
         if (empty($session)) {
-            return $this->topClient->getAppKey();
+            $session = $this->topClient->getAppKey();
         }
         if (empty($secretVersion)) {
-            return $session;
+            $secretVersion = '-255';
         }
 
         return 'top.cache.security.' . $session . '_' . $secretVersion . '_' . md5(SecretContext::class);
