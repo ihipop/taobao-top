@@ -119,7 +119,7 @@ class SecurityClient
             return $data;
         }
         $secretData = $this->securityUtil->getSecretDataByType($data, $type);
-        $this->logger()->debug('获得密钥对象', ['secretData' => $secretData]);
+        $this->logger()->info('获得密钥对象', ['secretData' => $secretData]);
         if (empty($secretData)) {
             return $data;
         }
@@ -377,7 +377,7 @@ class SecurityClient
             $cacheItem = $this->cacheClient->get($cacheKey);
             if (!empty($cacheItem)) {
                 $cacheItem = unserialize($cacheItem);
-                $this->logger()->debug('从缓存里面取得解密密钥:', [
+                $this->logger()->info('从缓存里面取得解密密钥:', [
                     'cacheContext' => $cacheItem,
                     'session'      => $session,
                     'version'      => $secretVersion,
@@ -396,7 +396,7 @@ class SecurityClient
         if ($this->cacheClient) {
             $this->cacheClient->setex($cacheKey, $cacheItem->invalidTime - time(), serialize($cacheItem));
         }
-        $this->logger()->debug('从远程服务器取得解密密钥:', [
+        $this->logger()->info('从远程服务器取得解密密钥:', [
             'cacheContext' => $cacheItem,
             'session'      => $session,
             'version'      => $secretVersion,
