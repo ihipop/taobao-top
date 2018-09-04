@@ -3,6 +3,7 @@
 namespace ihipop\TaobaoTop\security;
 
 use Exception;
+use ihipop\TaobaoTop\exceptions\DecryptErrorException;
 
 class SecurityUtil
 {
@@ -227,9 +228,9 @@ class SecurityUtil
         $last8Number  = substr($data, $len - 8, $len);
 
         return $separator . $prefixNumber . $separator . Security::encrypt(
-            $last8Number,
-            $secretContext->secret
-        ) . $separator . $secretContext->secretVersion . $separator;
+                $last8Number,
+                $secretContext->secret
+            ) . $separator . $secretContext->secretVersion . $separator;
     }
 
     /*
@@ -246,7 +247,7 @@ class SecurityUtil
     function decrypt($data, $type, $secretContext)
     {
         if (!$this->isEncryptData($data, $type)) {
-            throw new Exception("数据[" . $data . "]不是类型为[" . $type . "]的加密数据");
+            throw new DecryptErrorException("数据[" . $data . "]不是类型为[" . $type . "]的加密数据");
         }
         $dataLen   = strlen($data);
         $separator = $this->SEPARATOR_CHAR_MAP[$type];
@@ -534,9 +535,9 @@ class SecurityUtil
         $last4Number = substr($data, $dataLength - 4, $dataLength);
 
         return $separator . $this->hmacMD5EncryptToBase64($last4Number, $secretContext->secret) . $separator . Security::encrypt(
-            $data,
-            $secretContext->secret
-        ) . $separator . $secretContext->secretVersion . $separator . $separator;
+                $data,
+                $secretContext->secret
+            ) . $separator . $secretContext->secretVersion . $separator . $separator;
     }
 
     function encryptNormalIndex($data, $compressLen, $slideSize, $separator, $secretContext)
@@ -548,9 +549,9 @@ class SecurityUtil
         }
 
         return $separator . Security::encrypt(
-            $data,
-            $secretContext->secret
-        ) . $separator . $builder . $separator . $secretContext->secretVersion . $separator . $separator;
+                $data,
+                $secretContext->secret
+            ) . $separator . $builder . $separator . $secretContext->secretVersion . $separator . $separator;
     }
 
     function getArrayValue($array, $key, $default)

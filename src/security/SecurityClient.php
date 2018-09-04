@@ -32,6 +32,14 @@ class SecurityClient
     }
 
     /**
+     * @return \Psr\Log\LoggerInterface|\Psr\Log\NullLogger
+     */
+    protected function logger()
+    {
+        return $this->topClient->getLogger();
+    }
+
+    /**
      * 设置缓存处理器
      */
     function setCacheClient($cache)
@@ -111,6 +119,7 @@ class SecurityClient
             return $data;
         }
         $secretData = $this->securityUtil->getSecretDataByType($data, $type);
+        $this->logger()->debug('获得密钥对象', ['secretData' => $secretData]);
         if (empty($secretData)) {
             return $data;
         }
@@ -360,14 +369,23 @@ class SecurityClient
      */
     function getTopSecretWithCache($session, $secretVersion)
     {
-        $cacheKey  = $this->buildCacheKey($session, $secretVersion);
+        $cacheKey = $this->buildCacheKey($session, $secretVersion);
+        /** @var  $cacheItem  \ihipop\TaobaoTop\security\SecretContext */
         $cacheItem = null;
 
         if ($this->cacheClient) {
             $cacheItem = $this->cacheClient->get($cacheKey);
             if (!empty($cacheItem)) {
                 $cacheItem = unserialize($cacheItem);
+                $this->logger()->debug('从缓存里面取得解密密钥:', [
+                    'cacheContext' => $cacheItem,
+                    'session'      => $session,
+                    'version'      => $secretVersion,
+                    'cacheKey'     => $cacheKey,
+                ]);
                 if ($cacheItem->invalidTime > time()) {
+                    echo $cacheItem->secret . '--HIT--' . PHP_EOL;
+
                     return $cacheItem;
                 }
             }
@@ -378,6 +396,12 @@ class SecurityClient
         if ($this->cacheClient) {
             $this->cacheClient->setex($cacheKey, $cacheItem->invalidTime - time(), serialize($cacheItem));
         }
+        $this->logger()->debug('从远程服务器取得解密密钥:', [
+            'cacheContext' => $cacheItem,
+            'session'      => $session,
+            'version'      => $secretVersion,
+            'cacheKey'     => $cacheKey,
+        ]);
 
         return $cacheItem;
     }

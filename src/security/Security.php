@@ -2,7 +2,7 @@
 
 namespace ihipop\TaobaoTop\security;
 
-use Exception;
+use ihipop\TaobaoTop\exceptions\DecryptErrorException;
 
 class Security
 {
@@ -30,7 +30,7 @@ class Security
         $decrypted = openssl_decrypt(base64_decode($sStr), 'AES-128-CBC', $key, OPENSSL_RAW_DATA, self::$iv);
 
         if (!$decrypted) {
-            throw new Exception("Decrypt Error,Please Check SecretKey");
+            throw new DecryptErrorException("Decrypt 失败，请检查密钥是否正确");
         }
 
         return $decrypted;

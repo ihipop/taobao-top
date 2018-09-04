@@ -30,17 +30,22 @@ class TopClient
     protected $autoDecrypt  = true;
     /** @var $securityClient SecurityClient */
     protected $securityClient;
+    protected $logger;
     //PSR7 兼容的 HTTP client
     /**
      * @var $httpClient \GuzzleHttp\Client
      */
     public $httpClient;
 
-    public function __construct($appKey, $appSecret, $httpClient)
+    public function __construct($appKey, $appSecret, $httpClient, \Psr\Log\LoggerInterface $logger = null)
     {
         $this->appKey     = $appKey;
         $this->appSecret  = $appSecret;
         $this->httpClient = $httpClient;
+        if (!$logger) {
+            $logger = new \Psr\Log\NullLogger();
+        }
+        $this->logger = $logger;
         // 执行初始化事件
         $this->onInitialize();
     }
@@ -61,6 +66,18 @@ class TopClient
             }
         } catch (\Exception $e) {
         };
+    }
+
+    public function setLogger(\Psr\Log\LoggerInterface $logger)
+    {
+        $this->logger = $logger;
+
+        return $this;
+    }
+
+    public function getLogger()
+    {
+        return $this->logger;
     }
 
     public function initSecurityClient($secureNumber, $cacheClient = null)
@@ -203,11 +220,13 @@ class TopClient
                 throw new \Exception('请求的时候发生了错误: ' . json_encode($result), $result['code']);
             }
 
+            $this->logger->debug('解密前订单内容：', ['result' => $request]);
             if ($this->autoDecrypt) {
                 /** @var  $request \ihipop\TaobaoTop\requests\TopRequest */
                 $request = $originalRequest[$key];
                 $result  = $this->decryptRequest($result, $request);
             }
+            $this->logger->debug('解密后订单内容：', ['result' => $request]);
             $results[$key] = $result;
         }
 
