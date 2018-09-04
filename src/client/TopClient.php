@@ -220,13 +220,11 @@ class TopClient
                 throw new \Exception('请求的时候发生了错误: ' . json_encode($result), $result['code']);
             }
 
-            $this->logger->debug('解密前订单内容：', ['result' => $request]);
             if ($this->autoDecrypt) {
                 /** @var  $request \ihipop\TaobaoTop\requests\TopRequest */
                 $request = $originalRequest[$key];
                 $result  = $this->decryptRequest($result, $request);
             }
-            $this->logger->debug('解密后订单内容：', ['result' => $request]);
             $results[$key] = $result;
         }
 
@@ -267,8 +265,10 @@ class TopClient
                     } elseif (isset($filteredResponse[$key])) {
                         //                        $filedName = $key;
                         //                        $type      = $value;
+                        $this->logger->info('解密前订单内容：', ['response' => $filteredResponse]);
                         $decrypted = $this->securityClient->decrypt($filteredResponse[$key], $value, $session);
                         Arr::set($filteredResponse, $key, $decrypted);
+                        $this->logger->info('解密后订单内容：', ['response' => $filteredResponse]);
                     }
                 }
 
