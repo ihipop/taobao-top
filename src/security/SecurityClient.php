@@ -4,6 +4,7 @@ namespace ihipop\TaobaoTop\security;
 
 use Exception;
 use ihipop\TaobaoTop\client\TopClient;
+use ihipop\TaobaoTop\exceptions\DecryptErrorException;
 use ihipop\TaobaoTop\requests\taobao\GetTopSecret;
 
 class SecurityClient
@@ -119,7 +120,7 @@ class SecurityClient
             return $data;
         }
         $secretData = $this->securityUtil->getSecretDataByType($data, $type);
-        $this->logger()->info('获得密钥对象', ['secretData' => $secretData]);
+        $this->logger()->debug('获得密钥对象', ['secretData' => $secretData]);
         if (empty($secretData)) {
             return $data;
         }
@@ -367,13 +368,13 @@ class SecurityClient
     /**
      * 获取秘钥，使用缓存
      */
-    function getTopSecretWithCache($session, $secretVersion)
+    function getTopSecretWithCache($session, $secretVersion, $allowCache = true)
     {
         $cacheKey = $this->buildCacheKey($session, $secretVersion);
         /** @var  $cacheItem  \ihipop\TaobaoTop\security\SecretContext */
         $cacheItem = null;
 
-        if ($this->cacheClient) {
+        if ($this->cacheClient && $allowCache) {
             $cacheItem = $this->cacheClient->get($cacheKey);
             if (!empty($cacheItem)) {
                 $cacheItem = unserialize($cacheItem);
@@ -384,7 +385,7 @@ class SecurityClient
                     'cacheKey'     => $cacheKey,
                 ]);
                 if ($cacheItem->invalidTime > time()) {
-                    echo $cacheItem->secret . '--HIT--' . PHP_EOL;
+                    //                    echo $cacheItem->secret . '--HIT--' . PHP_EOL;
 
                     return $cacheItem;
                 }

@@ -13,7 +13,7 @@ class Security
     {
         $key = base64_decode($key);
 
-        return base64_encode(openssl_encrypt($input, 'aes-128-cbc', $key, true, self::$iv));
+        return base64_encode(openssl_encrypt($input, 'AES-128-CBC', $key, true, self::$iv));
     }
 
     public static function hmac_md5($input, $key)
@@ -30,7 +30,7 @@ class Security
         $decrypted = openssl_decrypt(base64_decode($sStr), 'AES-128-CBC', $key, OPENSSL_RAW_DATA, self::$iv);
 
         if (!$decrypted) {
-            throw new DecryptErrorException("Decrypt 失败，请检查密钥是否正确");
+            throw new DecryptErrorException(sprintf('解密失败，请检查密钥 %s 密文 %s 是否正确?', base64_encode($key), $sStr));
         }
 
         return $decrypted;

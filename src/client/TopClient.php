@@ -223,7 +223,9 @@ class TopClient
             if ($this->autoDecrypt) {
                 /** @var  $request \ihipop\TaobaoTop\requests\TopRequest */
                 $request = $originalRequest[$key];
-                $result  = $this->decryptRequest($result, $request);
+                //                $this->getLogger()->info(\GuzzleHttp\json_encode([$originalRequest, $key, $request, $request->getSession(), $result]));
+
+                $result = $this->decryptRequest($result, $request);
             }
             $results[$key] = $result;
         }
@@ -249,32 +251,29 @@ class TopClient
         if (!$this->securityClient) {
             throw new \Exception('解密必须指定安全客户端');
         }
-        static $decrypt;
-        if (!$decrypt) {
-            $decrypt = function ($fieldsConfig, $filteredResponse) use (&$decrypt, $session) {
-                foreach ($fieldsConfig as $key => $value) {
-                    if ($key === '@') {//表示原数据的对应子节点是个数组 如：trades.trade[]
-                        foreach ($filteredResponse as $subResponseKey => $singleSubResponse) {
-                            Arr::set($filteredResponse, $subResponseKey, $decrypt($value, $singleSubResponse));
-                        }
-                    } elseif (is_array($value)) {//表示原数据的对应子节点是直接就是字段
-                        $subResponse = Arr::get($filteredResponse, $key);
-                        if ($subResponse) {
-                            Arr::set($filteredResponse, $key, $decrypt($value, $subResponse));
-                        }
-                    } elseif (isset($filteredResponse[$key])) {
-                        //                        $filedName = $key;
-                        //                        $type      = $value;
-                        $this->logger->info('解密前订单内容：', ['response' => $filteredResponse]);
-                        $decrypted = $this->securityClient->decrypt($filteredResponse[$key], $value, $session);
-                        Arr::set($filteredResponse, $key, $decrypted);
-                        $this->logger->info('解密后订单内容：', ['response' => $filteredResponse]);
-                    }
-                }
 
-                return $filteredResponse;
-            };
-        }
+        $decrypt = function ($fieldsConfig, $filteredResponse) use (&$decrypt, $session) {
+            foreach ($fieldsConfig as $key => $configs) {
+                if ($key === '@') {//表示原数据的对应子节点是个数组 如：trades.trade[]
+                    foreach ($filteredResponse as $subResponseKey => $singleSubResponse) {
+                        Arr::set($filteredResponse, $subResponseKey, $decrypt($configs, $singleSubResponse));
+                    }
+                } elseif (is_array($configs)) {//表示原数据的对应子节点是直接就是字段
+                    $subResponse = Arr::get($filteredResponse, $key);
+                    if ($subResponse) {
+                        Arr::set($filteredResponse, $key, $decrypt($configs, $subResponse));
+                    }
+                } elseif (isset($filteredResponse[$key])) {
+                    $filedName = $key;
+                    $type      = $configs;
+                    //                    $this->logger->debug('解密前订单内容：', ['response' => $filteredResponse, 'session' => $session]);
+                    $decrypted = $this->securityClient->decrypt($filteredResponse[$filedName], $type, $session);
+                    Arr::set($filteredResponse, $filedName, $decrypted);
+                }
+            }
+
+            return $filteredResponse;
+        };
 
         return $decrypt($fieldsConfig, $response);
     }
@@ -311,6 +310,7 @@ class TopClient
                  * @var $req \ihipop\TaobaoTop\requests\TopRequest
                  */
                 $req->setSession($session);
+                //                app()->log->debug(sprintf('设置session: %s Seq: %s Req: %s', $session, $k, $req->getSession()));
                 $requests[$k] = $req;
             }
         }
