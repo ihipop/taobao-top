@@ -4,7 +4,6 @@ namespace ihipop\TaobaoTop\security;
 
 use Exception;
 use ihipop\TaobaoTop\client\TopClient;
-use ihipop\TaobaoTop\exceptions\DecryptErrorException;
 use ihipop\TaobaoTop\requests\taobao\GetTopSecret;
 
 class SecurityClient
@@ -378,7 +377,7 @@ class SecurityClient
             $cacheItem = $this->cacheClient->get($cacheKey);
             if (!empty($cacheItem)) {
                 $cacheItem = unserialize($cacheItem);
-                $this->logger()->info('从缓存里面取得解密密钥:', [
+                $this->logger()->debug('从缓存里面取得解密密钥:', [
                     'cacheContext' => $cacheItem,
                     'session'      => $session,
                     'version'      => $secretVersion,
@@ -397,7 +396,7 @@ class SecurityClient
         if ($this->cacheClient) {
             $this->cacheClient->setex($cacheKey, $cacheItem->invalidTime - time(), serialize($cacheItem));
         }
-        $this->logger()->info('从远程服务器取得解密密钥:', [
+        $this->logger()->debug('从远程服务器取得解密密钥:', [
             'cacheContext' => $cacheItem,
             'session'      => $session,
             'version'      => $secretVersion,
