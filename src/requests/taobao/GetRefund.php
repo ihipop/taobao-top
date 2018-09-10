@@ -9,32 +9,20 @@ use ihipop\TaobaoTop\requests\TopRequest;
  *
  * @method $this setFields($value)
  * @method getFields()
- * @method $this setStatus($value)
- * @method getStatus()
- * @method $this setSellerNick($value)
- * @method getSellerNick()
- * @method $this setType($value)
- * @method getType()
- * @method $this setPageNo($value)
- * @method getPageNo()
- * @method $this setPageSize($value)
- * @method getPageSize()
+ * @method $this setRefundId($value)
+ * @method getRefundId()
  */
-class GetRefundsApply extends TopRequest
+class GetRefund extends TopRequest
 {
 
     protected $apiName;
     protected $commaSeparatedParams = [
         'fields',
-        'type',
     ];
     protected $paramKeys            = [
         'fields',
-        'status',
-        'sellerNick',
-        'type',
-        'pageNo',
-        'pageSize',
+        'refundId',
+
     ];
 
     public function check()
