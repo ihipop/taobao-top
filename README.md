@@ -17,7 +17,7 @@
 - [x] 完全的 `namespace`实现 + `PSR4` Autoloader
 - [x] 重构设计的 `Request` 类 
 - [x] 重构过的 `TopClient` 
-- [ ] `TopClient`  配合重构过的 `Request` 类支持自动解密加密字段
+- [x] `TopClient`  配合重构过的 `Request` 类支持自动解密加密字段
 - [x] HTTP客户端可使用任何兼容`PSR7`的客户端实现 如： [guzzlehttp/guzzle](https://github.com/guzzle/guzzle) [swlib/saber](https://github.com/swlib/saber)
 - [x] CACHE客户端可使用任何兼容`PSR6`的客户端实现 如：[symfony/cache](https://github.com/symfony/cache)
 - [x] 移除`Mcrypt`依赖 ,改用`openssl`实现
