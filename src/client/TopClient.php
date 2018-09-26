@@ -64,7 +64,7 @@ class TopClient
                     $this->setGatewayUri(env('TAOBAO_TOP_GATEWAY_HTTPS'));
                 }
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
         };
     }
 

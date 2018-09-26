@@ -5,16 +5,18 @@ namespace ihipop\TaobaoTop\client;
 class GuzzleTopClient extends TopClient
 {
 
-    public function __construct($appKey, $appSecret)
+    public function __construct($appKey, $appSecret, \GuzzleHttp\Client $httpClient = null, \Psr\Log\LoggerInterface $logger = null)
     {
-        $httpClient = new \GuzzleHttp\Client(
-            [
-                'verify'          => false,
-                'timeout'         => 30,
-                'connect_timeout' => 30,
-            ]
-        );
-        parent::__construct($appKey, $appSecret, $httpClient);
+        if (!$httpClient) {
+            $httpClient = new \GuzzleHttp\Client(
+                [
+                    'verify'          => false,
+                    'timeout'         => 30,
+                    'connect_timeout' => 30,
+                ]
+            );
+        }
+        parent::__construct($appKey, $appSecret, $httpClient, $logger);
     }
 
     /**
