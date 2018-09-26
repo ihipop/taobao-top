@@ -73,6 +73,14 @@ abstract class TopRequest
         throw new \Exception('指定属性不存在: ' . $name);
     }
 
+    public function __toString()
+    {
+        return json_encode([
+            'request_para' => $this->getRequestParas(),
+            'self'         => $this,
+        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+    }
+
     public function setCommaSeparatedParam($name, $value)
     {
         if (is_array($value)) {
