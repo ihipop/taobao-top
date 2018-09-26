@@ -11,7 +11,7 @@ class GuzzleTopClient extends TopClient
             $httpClient = new \GuzzleHttp\Client(
                 [
                     'verify'          => false,
-                    'timeout'         => 30,
+                    'timeout'         => 50,
                     'connect_timeout' => 30,
                 ]
             );
