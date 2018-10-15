@@ -50,6 +50,11 @@ class TopClient
         $this->onInitialize();
     }
 
+    public function __destruct()
+    {
+        $this->securityClient = null;
+    }
+
     public function onInitialize()
     {
         if (!$this->appKey || !$this->appSecret) {
