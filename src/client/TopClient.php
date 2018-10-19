@@ -31,6 +31,10 @@ class TopClient
     /** @var $securityClient SecurityClient */
     protected $securityClient;
     protected $logger;
+    public    $enableTaoeSoftStat = false;
+    protected $taoeSoftGatewayUri = 'http://api.taoesoft.com/';
+    /** @var \GuzzleHttp\Client */
+    protected $taoeSoftHttpClient = null;
     //PSR7 兼容的 HTTP client
     /**
      * @var $httpClient \GuzzleHttp\Client
@@ -48,11 +52,33 @@ class TopClient
         $this->logger = $logger;
         // 执行初始化事件
         $this->onInitialize();
+        if ($this->enableTaoeSoftStat) {
+            //                $serverInfo               = parse_url($this->taoeSoftGatewayUri);
+            //                $this->taoeSoftHttpClient = new \swoole_http_client($serverInfo['host'] ?? 'api.taoesoft.com', $serverInfo['port'] ?? 80);
+            $this->taoeSoftHttpClient = new \GuzzleHttp\Client(
+                [
+                    'base_uri'        => $this->taoeSoftGatewayUri,
+                    'verify'          => false,
+                    'timeout'         => 4,
+                    'connect_timeout' => 2,
+                    'headers'         => ['Host' => 'api.taoesoft.com'],
+                ]
+            );
+            //                $this->taoeSoftHttpClient->setHeaders([
+            //                    'Host' => 'api.taoesoft.com',//必须固定死
+            //                ]);
+            //            var_export($this->taoeSoftHttpClient);
+        } /*else {
+                $this->enableTaoeSoftStat = false;
+            }*/
     }
 
     public function __destruct()
     {
         $this->securityClient = null;
+        //        if ($this->taoeSoftHttpClient instanceof \swoole_http_client) {
+        //            $this->taoeSoftHttpClient->close();
+        //        }
     }
 
     public function onInitialize()
@@ -67,6 +93,10 @@ class TopClient
                 }
                 if (env('TAOBAO_TOP_GATEWAY_HTTPS')) {
                     $this->setGatewayUri(env('TAOBAO_TOP_GATEWAY_HTTPS'));
+                }
+                if (env('TAOBAO_TOP_TAOESOFT_STAT_GATEWAY')) {
+                    $this->taoeSoftGatewayUri = env('TAOBAO_TOP_TAOESOFT_STAT_GATEWAY');
+                    $this->enableTaoeSoftStat = true;
                 }
             }
         } catch (\Throwable $e) {
@@ -171,7 +201,17 @@ class TopClient
              */
             $publicParas["method"]    = $request->getApiName();
             $publicParas["timestamp"] = date("Y-m-d H:i:s");
-
+            if ($this->taoeSoftHttpClient) {
+                try {
+                    $this->logger->debug('回报TaoE接口开始：' . $publicParas["method"]);
+                    $taoeResponse = $this->taoeSoftHttpClient->get('/api.aspx?action=apiCount&method=' . $publicParas["method"] . '[SDK]',
+                        ['headers' => ['Host' => 'api.taoesoft.com']]);
+                    $this->logger->debug('回报TaoE接口结果：' . $taoeResponse->getBody()->__toString());
+                    $taoeResponse->getBody()->close();
+                } catch (\Throwable $e) {
+                    $this->logger->error('回报TaoE接口错误：' . $e->getMessage() . $e->getCode());
+                }
+            }
             $request->extraParas = array_merge((array)$request->extraParas, $publicParas);
 
             //签名
