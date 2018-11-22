@@ -20,6 +20,9 @@ class GetItempropvalues extends TopRequest
 {
     
     protected $apiName;
+    protected $commaSeparatedParams = [
+        'fields',
+    ];
     protected $paramKeys    = [
         'fields',
         'cid',

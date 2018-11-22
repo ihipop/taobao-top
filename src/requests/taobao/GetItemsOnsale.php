@@ -14,6 +14,9 @@ class GetItemsOnsale extends TopRequest
 {
     
     protected $apiName;
+    protected $commaSeparatedParams = [
+        'fields',
+    ];
     protected $paramKeys    = [
         'fields',
     ];
