@@ -9,6 +9,11 @@ use ihipop\TaobaoTop\requests\TopRequest;
  *
  * @method $this setFields($value)
  * @method getFields()
+ * @method $this setPageNo($value)
+ * @method getPageNo()
+ * @method $this setPageSize($value)
+ * @method getPageSize()
+ *
  */
 class GetItemsOnsale extends TopRequest
 {
@@ -19,6 +24,8 @@ class GetItemsOnsale extends TopRequest
     ];
     protected $paramKeys    = [
         'fields',
+        'pageNo',
+        'pageSize'
     ];
 
     public function check()
