@@ -53,8 +53,6 @@ class TopClient
         // 执行初始化事件
         $this->onInitialize();
         if ($this->enableTaoeSoftStat) {
-            //                $serverInfo               = parse_url($this->taoeSoftGatewayUri);
-            //                $this->taoeSoftHttpClient = new \swoole_http_client($serverInfo['host'] ?? 'api.taoesoft.com', $serverInfo['port'] ?? 80);
             $this->taoeSoftHttpClient = new \GuzzleHttp\Client(
                 [
                     'base_uri'        => $this->taoeSoftGatewayUri,
@@ -64,13 +62,7 @@ class TopClient
                     'headers'         => ['Host' => 'api.taoesoft.com'],
                 ]
             );
-            //                $this->taoeSoftHttpClient->setHeaders([
-            //                    'Host' => 'api.taoesoft.com',//必须固定死
-            //                ]);
-            //            var_export($this->taoeSoftHttpClient);
-        } /*else {
-                $this->enableTaoeSoftStat = false;
-            }*/
+        }
     }
 
     public function __destruct()
@@ -207,7 +199,7 @@ class TopClient
                     $taoeResponse = $this->taoeSoftHttpClient->get('/api.aspx?action=apiCount&method=' . $publicParas["method"] . '[SDK]',
                         ['headers' => ['Host' => 'api.taoesoft.com']]);
                     $this->logger->debug('回报TaoE接口结果：' . $taoeResponse->getBody()->__toString());
-                    $taoeResponse->getBody()->close();
+                    #$taoeResponse->getBody()->close();
                 } catch (\Throwable $e) {
                     $this->logger->error('回报TaoE接口错误：' . $e->getMessage() . $e->getCode());
                 }
