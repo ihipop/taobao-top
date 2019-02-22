@@ -68,9 +68,6 @@ class TopClient
     public function __destruct()
     {
         $this->securityClient = null;
-        //        if ($this->taoeSoftHttpClient instanceof \swoole_http_client) {
-        //            $this->taoeSoftHttpClient->close();
-        //        }
     }
 
     public function onInitialize()
