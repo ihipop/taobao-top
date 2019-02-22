@@ -44,7 +44,94 @@ composer config prefer-dist true
 composer require ihipop/taobao-top
 ```
 
-## 私有托管
+# 快速开始
+
+## 快速初始化客户端
+除了手动new客户端，我封装了一个简易工厂类
+```php
+$topClient = Factory::guzzleTopClient([
+            'type'         => $tokenType,
+            'logger'       => $logger,//符合PSR日志标准的客户端
+            'cache_client' => $this->cacheClient,//符合PSR标准的缓存客户端（尚且有BUG）
+        ]);
+```
+
+## 初始化请求类
+
+以获取订单为例
+```php
+$request = new GetTradesSold();
+
+$request->setFields([
+    'post_fee',
+    'receiver_name',
+    'receiver_state',
+    'receiver_address',
+    'receiver_zip',
+    'receiver_mobile',
+    'receiver_phone',
+    'consign_time',
+    'received_payment',
+    'receiver_country',
+    'receiver_town',
+    'tid',
+    'num',
+    'status',
+    'title',
+    'type',
+    'price',//其他字段略
+])->setType([
+    'guarantee_trade',
+    'auto_delivery',
+    'ec',
+    'cod',
+    'step',
+    'tmall_i18n',
+    'nopaid',
+])->setUseHasNext('true')->setPageSize($perPage);
+$request->setStartCreated(date('Y-m-d H:i:s', $startAt))->setEndCreated(date('Y-m-d H:i:s', $endAt));
+```
+
+## 发送请求
+
+```php
+$response = $topClient->execute($request, $accessToken)
+```
+
+## 自动解密
+
+`GetTradesSold` 类已经封装自动解密方法 ，所以上面的Request类出来就是明文字段 
+
+下面对自动解密的配置做出摘要说明
+
+```php
+public $encryptedFields = [
+        'trades.trade' => [
+            '@' => [//订单1
+                'receiver_name'                => 'name',
+                'buyer_nick'                   => 'nick',
+                'receiver_mobile'              => 'mobile',
+                'receiver_phone'               => 'phone',
+                'service_orders.service_order' => [
+                    '@' => [//服务订单1
+                        'buyer_nick' => 'nick',
+                    ],
+                ],
+            ],
+        ],
+    ];
+```
+
+`@`表示这是一组同样结构的数组
+
+所以 上面的配置表示:
+对响应内容内的 `$response['trades']['trade']` 这个数组的 `receiver_name` 等字段做解密，
+其中`receiver_name`的加密类型是`name`。其他加密类型自己看淘宝文档。
+
+## 撰写自己的`$request`
+
+
+# 私有托管
 
 假设你托管的私有仓库url是 `https://example.com/composer/taobao-top.git`
 
