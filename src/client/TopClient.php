@@ -50,6 +50,11 @@ class TopClient
         $this->onInitialize();
     }
 
+    public function __destruct()
+    {
+        $this->securityClient = null;
+    }
+
     public function onInitialize()
     {
         if (!$this->appKey || !$this->appSecret) {
@@ -64,7 +69,7 @@ class TopClient
                     $this->setGatewayUri(env('TAOBAO_TOP_GATEWAY_HTTPS'));
                 }
             }
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
         };
     }
 
@@ -166,8 +171,7 @@ class TopClient
              */
             $publicParas["method"]    = $request->getApiName();
             $publicParas["timestamp"] = date("Y-m-d H:i:s");
-
-            $request->extraParas = array_merge((array)$request->extraParas, $publicParas);
+            $request->extraParas      = array_merge((array)$request->extraParas, $publicParas);
 
             //签名
             $request->setSign($this->signPara($request->getRequestParas()));

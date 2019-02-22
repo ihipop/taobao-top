@@ -9,25 +9,23 @@ use ihipop\TaobaoTop\requests\TopRequest;
  *
  * @method $this setFields($value)
  * @method getFields()
- * @method $this setRefundId($value)
- * @method getRefundId()
+ * @method $this setPageNo($value)
+ * @method getPageNo()
+ * @method $this setPageSize($value)
+ * @method getPageSize()
+ *
  */
-class GetRefund extends TopRequest
+class GetItemsOnsale extends TopRequest
 {
-
+    
     protected $apiName;
     protected $commaSeparatedParams = [
         'fields',
     ];
-    protected $paramKeys            = [
+    protected $paramKeys    = [
         'fields',
-        'refundId',
-
-    ];
-    public    $encryptedFields      = [
-        'refund' => [
-            'buyer_nick' => 'name',
-        ],
+        'pageNo',
+        'pageSize'
     ];
 
     public function check()
