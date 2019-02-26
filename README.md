@@ -21,6 +21,7 @@
 - [x] HTTP客户端可使用任何兼容`PSR7`的客户端实现 如： [guzzlehttp/guzzle](https://github.com/guzzle/guzzle) [swlib/saber](https://github.com/swlib/saber)
 - [x] CACHE客户端可使用任何兼容`PSR6`的客户端实现 如：[symfony/cache](https://github.com/symfony/cache)
 - [x] 移除`Mcrypt`依赖 ,改用`openssl`实现
+- [x] 接口名称[自动映射](#默认命名规则)
 - [ ] 官方SDK `Request` 的转换工具 ，转换官方 `SDK` 到重构过的 `Request` 类 
 - [ ] 移除加密解密模块`SecurityClient`以及`TopClient`内遗留的无用方法和PHP4遗留 (10%)
 
@@ -125,11 +126,32 @@ public $encryptedFields = [
 `@`表示这是一组同样结构的数组
 
 所以 上面的配置表示:
-对响应内容内的 `$response['trades']['trade']` 这个数组的 `receiver_name` 等字段做解密，
+对响应内容内的 `$response['trades']['trade']` 这个数组的 `receiver_name` **等** 字段做解密，
 其中`receiver_name`的加密类型是`name`。其他加密类型自己看淘宝文档。
 
 ## 撰写自己的`$request`
 
+### 默认命名规则
+
+默认的，只要按照约定撰写类名称，会自动映射成接口名称，比如：
+
+接口名称： _taobao_.`trades`.`sold`.**get**
+
+最后一个动词（本例是**get**）提前，放到 _taobao_ 的namespace下,中间部分改成大驼峰
+
+也就是 \\ihipop\\TaobaoTop\\requests\\_taobao_\\**Get**`TradesSold`
+
+本例中，_taobao_ 换成 _alibaba_ 同理，比如 _alibaba_.`orp`.**recommend** ，按照规则应该写成
+
+ \\ihipop\\TaobaoTop\\requests\\_alibaba_\\**Get**`Orp`
+
+### 任性的写名称
+
+你可以任性的写起名，只要在类里面设置好 ``$apiName`` 属性，则请求的时候优先读取这个名称
+
+### 别忘记自动解密配置
+
+见 [自动解密](#自动解密)
 
 # 私有托管
 
