@@ -126,7 +126,7 @@ public $encryptedFields = [
 `@`表示这是一组同样结构的数组
 
 所以 上面的配置表示:
-对响应内容内的 `$response['trades']['trade']` 这个数组的 `receiver_name` 等字段做解密，
+对响应内容内的 `$response['trades']['trade']` 这个数组的 `receiver_name` **等** 字段做解密，
 其中`receiver_name`的加密类型是`name`。其他加密类型自己看淘宝文档。
 
 ## 撰写自己的`$request`
