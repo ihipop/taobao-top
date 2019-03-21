@@ -143,7 +143,7 @@ public $encryptedFields = [
 
 本例中，_taobao_ 换成 _alibaba_ 同理，比如 _alibaba_.`orp`.**recommend** ，按照规则应该写成
 
- \\ihipop\\TaobaoTop\\requests\\_alibaba_\\**Get**`Orp`
+ \\ihipop\\TaobaoTop\\requests\\_alibaba_\\**Recommend**`Orp`
 
 ### 任性的写名称
 
