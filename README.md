@@ -19,7 +19,7 @@
 - [x] 重构过的 `TopClient` 
 - [x] `TopClient`  配合重构过的 `Request` 类支持自动解密加密字段
 - [x] HTTP客户端可使用任何兼容`PSR7`的客户端实现 如： [guzzlehttp/guzzle](https://github.com/guzzle/guzzle) [swlib/saber](https://github.com/swlib/saber)
-- [x] CACHE客户端可使用任何兼容`PSR6`的客户端实现 如：[symfony/cache](https://github.com/symfony/cache)
+- [x] CACHE客户端可使用任何兼容`PSR16`的客户端实现 如：[symfony/cache](https://github.com/symfony/cache)
 - [x] 移除`Mcrypt`依赖 ,改用`openssl`实现
 - [x] 接口名称[自动映射](#默认命名规则)
 - [ ] 官方SDK `Request` 的转换工具 ，转换官方 `SDK` 到重构过的 `Request` 类 
@@ -53,7 +53,7 @@ composer require ihipop/taobao-top
 $topClient = Factory::guzzleTopClient([
             'type'         => $tokenType,
             'logger'       => $logger,//符合PSR日志标准的客户端
-            'cache_client' => $this->cacheClient,//符合PSR标准的缓存客户端（尚且有BUG）
+            'cache_client' => $this->cacheClient,//符合PSR16标准的缓存客户端
         ]);
 ```
 
@@ -143,7 +143,7 @@ public $encryptedFields = [
 
 本例中，_taobao_ 换成 _alibaba_ 同理，比如 _alibaba_.`orp`.**recommend** ，按照规则应该写成
 
- \\ihipop\\TaobaoTop\\requests\\_alibaba_\\**Get**`Orp`
+ \\ihipop\\TaobaoTop\\requests\\_alibaba_\\**Recommend**`Orp`
 
 ### 任性的写名称
 

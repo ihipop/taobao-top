@@ -395,7 +395,6 @@ class SecurityClient
         if ($allowCache) {
             $cacheItem = $cahceClient->get($cacheKey);
             if (!empty($cacheItem)) {
-                $cacheItem = unserialize($cacheItem, ['allowed_classes' => [SecretContext::class]]);
                 $this->logger()->debug('从缓存里面取得解密密钥:', [
                     'cacheContext' => $cacheItem,
                     'session'      => $session,
@@ -406,14 +405,15 @@ class SecurityClient
 
                     return $cacheItem;
                 }
+                //如果没顺利return 说明缓存是错的 删掉
+
+                $cahceClient->delete($cacheKey);
             }
         }
-        //如果没顺利return 说明缓存是错的 删掉
-        $cahceClient->delete($cacheKey);
 
         $cacheItem = $this->getTopSecret($session, $secretVersion);
 
-        $cahceClient->set($cacheKey, $cacheItem->invalidTime - time(), serialize($cacheItem));
+        $cahceClient->set($cacheKey, $cacheItem, $cacheItem->invalidTime - time());
 
         $this->logger()->debug('从远程服务器取得解密密钥:', [
             'cacheContext' => $cacheItem,
