@@ -171,7 +171,7 @@ class TopClient
              */
             $publicParas["method"]    = $request->getApiName();
             $publicParas["timestamp"] = date("Y-m-d H:i:s");
-            $request->extraParas      = array_merge((array)$request->extraParas, $publicParas);
+            $request->extraParas = array_merge((array)$request->extraParas, $publicParas);
 
             //签名
             $request->setSign($this->signPara($request->getRequestParas()));

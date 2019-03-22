@@ -29,8 +29,10 @@ class GuzzleTopClient extends TopClient
     {
         //这里将来改用连接池实现
         foreach ($requests as $key => $request) {
-            $requests[$key] = $this->httpClient->sendAsync($request);
+            $requests[$key] = $this->httpClient->send($request);
         }
+
+        return $requests;
 
         return \GuzzleHttp\Promise\unwrap($requests);
     }

@@ -3,6 +3,7 @@
 namespace ihipop\TaobaoTop\security;
 
 use Exception;
+use ihipop\TaobaoTop\cache\NullCacheClient;
 use ihipop\TaobaoTop\client\TopClient;
 use ihipop\TaobaoTop\requests\taobao\GetTopSecret;
 
@@ -18,7 +19,7 @@ class SecurityClient
     // 见 http://bigdata.taobao.com/doc.htm?docId=106214&docType=1
     private $securityUtil;
     /**
-     * @var $cacheClient \Psr\Cache\CacheItemPoolInterface
+     * @var $cacheClient \Psr\SimpleCache\CacheInterface
      */
     private $cacheClient;
 
@@ -29,6 +30,7 @@ class SecurityClient
         $this->secureRandomNum = $secureRandomNum;
 
         $this->securityUtil = new SecurityUtil();
+        $this->cacheClient  = new NullCacheClient();
     }
 
     /**
@@ -40,9 +42,17 @@ class SecurityClient
     }
 
     /**
+     * @return \Psr\SimpleCache\CacheInterface
+     */
+    protected function cache()
+    {
+        return $this->cacheClient ?: ($this->cacheClient = new NullCacheClient());
+    }
+
+    /**
      * 设置缓存处理器
      */
-    function setCacheClient($cache)
+    function setCacheClient(\Psr\SimpleCache\CacheInterface $cache)
     {
         $this->cacheClient = $cache;
 
@@ -364,6 +374,13 @@ class SecurityClient
         return $this->securityUtil->isPartEncryptData($array, $type);
     }
 
+    function clearSecretCacheBySession($session, $secretVersion)
+    {
+        $cacheKey = $this->buildCacheKey($session, $secretVersion);
+
+        return $this->cache()->delete($cacheKey);
+    }
+
     /**
      * 获取秘钥，使用缓存
      */
@@ -372,30 +389,32 @@ class SecurityClient
         $cacheKey = $this->buildCacheKey($session, $secretVersion);
         /** @var  $cacheItem  \ihipop\TaobaoTop\security\SecretContext */
         $cacheItem = null;
+        /** @var  $cahceClient  \Symfony\Component\Cache\Simple\AbstractCache */
+        $cahceClient = $this->cache();
 
-        if ($this->cacheClient && $allowCache) {
-            $cacheItem = $this->cacheClient->get($cacheKey);
+        if ($allowCache) {
+            $cacheItem = $cahceClient->get($cacheKey);
             if (!empty($cacheItem)) {
-                $cacheItem = unserialize($cacheItem);
                 $this->logger()->debug('从缓存里面取得解密密钥:', [
                     'cacheContext' => $cacheItem,
                     'session'      => $session,
                     'version'      => $secretVersion,
                     'cacheKey'     => $cacheKey,
                 ]);
-                if ($cacheItem->invalidTime > time()) {
-                    //                    echo $cacheItem->secret . '--HIT--' . PHP_EOL;
+                if ($cacheItem instanceof SecretContext && $cacheItem->invalidTime > time()) {
 
                     return $cacheItem;
                 }
+                //如果没顺利return 说明缓存是错的 删掉
+
+                $cahceClient->delete($cacheKey);
             }
         }
 
         $cacheItem = $this->getTopSecret($session, $secretVersion);
 
-        if ($this->cacheClient) {
-            $this->cacheClient->setex($cacheKey, $cacheItem->invalidTime - time(), serialize($cacheItem));
-        }
+        $cahceClient->set($cacheKey, $cacheItem, $cacheItem->invalidTime - time());
+
         $this->logger()->debug('从远程服务器取得解密密钥:', [
             'cacheContext' => $cacheItem,
             'session'      => $session,
