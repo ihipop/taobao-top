@@ -20,7 +20,8 @@
         "php": ">=7.1.0",
         "guzzlehttp/psr7": "^1.4",
         "psr/simple-cache": "^1.0",
-        "psr/log": "^1.0"
+        "psr/log": "^1.0",
+        "ihipop/psr-null-cache": "^1.0"
     },
     "suggest": {
         "guzzlehttp/guzzle": "经典的兼容PSR7的HTTP客户端",
