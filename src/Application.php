@@ -117,12 +117,12 @@ class Application extends Container implements \Psr\Container\ContainerInterface
 
     public function get($id)
     {
-        return $this[$id];
+        return $this->offsetGet($id);
     }
 
     public function has($id)
     {
-        return isset($this[$id]);
+        return $this->offsetExists($id);
     }
 
     /**
