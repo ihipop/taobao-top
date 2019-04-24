@@ -11,13 +11,13 @@ class GuzzleTopClient extends TopClient
     /**
      * @param $requests
      *
-     * @return array|mixed|\Psr\Http\Message\ResponseInterface
+     * @return \Psr\Http\Message\ResponseInterface[]
      * @throws \Throwable
      */
     public function send($requests)
     {
         //这里将来改用连接池实现
-        foreach ($requests as $key => $request) {
+        foreach ((array)$requests as $key => $request) {
             $requests[$key] = $this->httpClient->sendAsync($request);
         }
 

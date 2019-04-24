@@ -12,7 +12,7 @@ use ihipop\TaobaoTop\client\GuzzleTopClient;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 
-class GuzzleApiClientServiceProvider implements ServiceProviderInterface
+class GuzzleTopClientServiceProvider implements ServiceProviderInterface
 {
 
     /**
@@ -27,8 +27,8 @@ class GuzzleApiClientServiceProvider implements ServiceProviderInterface
     {
         $pimple->offsetSet('httpClient', function (Application $app) {
             $config = $app->getConfig('http.guzzle_config');
-            if (class_exists('\Swoole\Coroutine') && empty($config['handler'])) {
-                $config['handler'] = HandlerStack::create(\GuzzleHttp\Handler\StreamHandler::class);
+            if (class_exists('\Swoole\Coroutine') && (\Co::getuid() > 1) && empty($config['handler'])) {
+                $config['handler'] = HandlerStack::create(new \GuzzleHttp\Handler\StreamHandler());
             }
 
             return new Client($config);
@@ -36,5 +36,7 @@ class GuzzleApiClientServiceProvider implements ServiceProviderInterface
         $pimple->offsetSet('topClient', function (Application $app) {
             return $client = new GuzzleTopClient($app);
         });
+        $pimple->offsetGet('httpClient');
+        $pimple->offsetGet('topClient');
     }
 }

@@ -65,13 +65,18 @@ abstract class BaseRequest
             throw  new  \Exception('未指定请求类型');
         }
 
-        if (is_array($value) && is_array($this->data) && $merge) {
-            $this->data = array_merge($this->data, $value);
+        if (is_array($value) && $merge) {
+            $this->data = array_merge((array)$this->data, $value);
         } else {
             $this->data = $value;
         }
 
         return $this;
+    }
+
+    public function addDataArray(array $value)
+    {
+        return $this->setData($value, true);
     }
 
     public function setQuery(array $value, $merge = false)

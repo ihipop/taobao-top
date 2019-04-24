@@ -5,7 +5,7 @@
 
 namespace ihipop\TaobaoTop;
 
-use ihipop\TaobaoTop\providers\GuzzleApiClientServiceProvider;
+use ihipop\TaobaoTop\providers\GuzzleTopClientServiceProvider;
 use ihipop\TaobaoTop\providers\NullCacheServiceProvider;
 use ihipop\TaobaoTop\providers\NullLoggerServiceProvider;
 use ihipop\TaobaoTop\providers\SecurityServiceProvider;
@@ -28,9 +28,7 @@ class Application extends Container implements \Psr\Container\ContainerInterface
      */
     protected $userConfig = [];
     protected $providers  = [
-        NullCacheServiceProvider::class,
-        NullLoggerServiceProvider::class,
-        SecurityServiceProvider::class,
+        'security' => SecurityServiceProvider::class,
     ];
 
     /**
@@ -64,9 +62,7 @@ class Application extends Container implements \Psr\Container\ContainerInterface
      */
     public function getProviders()
     {
-        return array_merge($this->providers, [
-            $this->getConfig('providers'),
-        ]);
+        return array_merge($this->providers, $this->getConfig('providers'));
     }
 
     protected $_config;
@@ -102,7 +98,9 @@ class Application extends Container implements \Psr\Container\ContainerInterface
                     'secureRandomNum' => 'qawsed',
                 ],
                 'providers' => [
-                    GuzzleApiClientServiceProvider::class,
+                    'cache'  => NullCacheServiceProvider::class,
+                    'logger' => NullLoggerServiceProvider::class,
+                    'client' => GuzzleTopClientServiceProvider::class,
                 ],
             ];
 

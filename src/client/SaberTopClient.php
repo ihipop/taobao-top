@@ -3,7 +3,6 @@
 namespace ihipop\TaobaoTop\client;
 
 use Swlib\Http\Uri;
-use Swoole\Coroutine\Channel;
 
 class SaberTopClient extends TopClient
 {
@@ -13,25 +12,44 @@ class SaberTopClient extends TopClient
 
     public function send($requests)
     {
-        $total = count($requests);
-        $chan  = new Channel($total);
-        foreach ($requests as $key => $request) {
-            /** @var  $psr \Swlib\Saber\Request */
-            /** @var  $request \Psr\Http\Message\RequestInterface */
-            \Swoole\Coroutine::create(function () use ($chan, $key, $request) {
-                $psr = $this->httpClient->psr(['use_pool' => true]);
-                $psr = $psr->withMethod($request->getMethod());
-                $psr = $psr->withUri(new Uri((string)$request->getUri()));
-                $psr = $psr->withHeaders($request->getHeaders());
-                $psr = $psr->withBody($request->getBody());
-                $chan->push([$key => $psr->exec()->recv()]);
-            });
-        }
         $result = [];
+        $total  = count($requests);
+        $chan   = new \Swoole\Coroutine\Channel($total);
+        foreach ($requests as $key => $request) {
+            /** @var  $request \Psr\Http\Message\RequestInterface */
+            $psr = $this->httpClient->psr(['use_pool' => true]);
+            $psr = $psr->withMethod($request->getMethod());
+            $psr = $psr->withUri(new Uri((string)$request->getUri()));
+            $psr = $psr->withHeaders($request->getHeaders());
+            $psr = $psr->withBody($request->getBody());
+            $chan->push([$key => $psr->exec()->recv()]);
+        }
+
         for ($i = 1; $i <= $total; $i++) {
-            $result[] = $chan->pop();
+            $result += $chan->pop();
         }
 
         return $result;
+    }
+
+    public function sendExample($requests)
+    {
+        $batch = [];
+        foreach ($requests as $key => $request) {
+            /** @var  $request \Psr\Http\Message\RequestInterface */
+            $psr         = $this->httpClient->psr(['use_pool' => true]);
+            $psr         = $psr->withMethod($request->getMethod());
+            $psr         = $psr->withUri(new Uri((string)$request->getUri()));
+            $psr         = $psr->withHeaders($request->getHeaders());
+            $psr         = $psr->withBody($request->getBody());
+            $batch[$key] = [
+                'uri'     => (string)$psr->getUri(),
+                'method'  => $psr->getMethod(),
+                'headers' => $psr->getHeaders(),
+                'data'    => $psr->getBody(),
+            ];
+        }
+
+        return $this->httpClient->requests($batch);
     }
 }

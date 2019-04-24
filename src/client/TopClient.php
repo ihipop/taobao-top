@@ -144,16 +144,17 @@ abstract class TopClient extends AbstractHttpApiClient
             }
             $request->apiPath = $gwUrl;
             //签名
+            $request->setData(['app_key' => $this->appKey, 'partner_id' => $this->sdkVersion, 'simplify' => false, 'sign_method' => $this->signMethod], true);
             $request->setSign($this->signPara(array_merge($request->getQuery(), $request->getData())));
             $psr7Request = $request->getRequest();
-
+            //            var_export((string)$psr7Request->getBody());
             if ($hostNameOverRide) {
                 $psr7Request = $psr7Request->withHeader('host', $hostNameOverRide);
             }
-            $requests[$key] = $psr7Request;
+            $psr7Requests[$key] = $psr7Request;
         }
 
-        $responses = $this->send($requests);
+        $responses = $this->send($psr7Requests);
         foreach ($responses as $key => $response) {
             /** @var  $request \ihipop\TaobaoTop\requests\TopRequest */
             $request = $requests[$key];
@@ -184,9 +185,11 @@ abstract class TopClient extends AbstractHttpApiClient
             } else {
                 throw new \Exception('Invalid XML Response');
             }
+        } else {
+            throw new \RuntimeException('unknown format: ' . $format);
         }
         if (!empty($result['code'])) {
-            $this->getExceptionInstanceByResponce($result);
+            throw $this->getExceptionInstanceByResponce($result);
         }
 
         return $result;
@@ -204,9 +207,11 @@ abstract class TopClient extends AbstractHttpApiClient
         }
     }
 
-    public function getExceptionInstanceBycode($result)
+    public function getExceptionInstanceByResponce(array $result)
     {
-        if (!is_int($result['code'])) {
+
+        $code = $result['code'];
+        if (!is_int($code)) {
             $code = -1;
         }
         $class   = $this->getExceptionClassBycode($result['code'], $result['sub_code'] ?? null);
@@ -216,7 +221,6 @@ abstract class TopClient extends AbstractHttpApiClient
             $message .= ': ';
             $message .= $result['sub_msg'];
         }
-
         $instance = new $class($message, $code);
         if ($instance instanceof TaobaoTopServerSideException) {
             $instance->setSubErrorCode($result['sub_code'] ?? null);

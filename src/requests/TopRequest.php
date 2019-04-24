@@ -133,7 +133,9 @@ abstract class TopRequest extends BaseRequest
 
     public function getData()
     {
-        return array_merge(is_array(parent::getData()) ?: [], [
+        $data = parent::getData();
+
+        return array_merge(is_array($data) ? $data : [], [
             'v'         => $this->apiVersion,
             'format'    => $this->format,
             'method'    => $this->getApiName(),
@@ -154,7 +156,7 @@ abstract class TopRequest extends BaseRequest
 
     public function setSign($sign)
     {
-        $this->setData(['sign' => $sign, true]);
+        $this->setData(['sign' => $sign], true);
 
         return $this;
     }
