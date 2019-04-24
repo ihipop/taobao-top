@@ -5,19 +5,8 @@ namespace ihipop\TaobaoTop\client;
 class GuzzleTopClient extends TopClient
 {
 
-    public function __construct($appKey, $appSecret, \GuzzleHttp\Client $httpClient = null, \Psr\Log\LoggerInterface $logger = null)
-    {
-        if (!$httpClient) {
-            $httpClient = new \GuzzleHttp\Client(
-                [
-                    'verify'          => false,
-                    'timeout'         => 50,
-                    'connect_timeout' => 30,
-                ]
-            );
-        }
-        parent::__construct($appKey, $appSecret, $httpClient, $logger);
-    }
+    /** @var $httpClient \GuzzleHttp\Client */
+    protected $httpClient;
 
     /**
      * @param $requests
@@ -25,14 +14,12 @@ class GuzzleTopClient extends TopClient
      * @return array|mixed|\Psr\Http\Message\ResponseInterface
      * @throws \Throwable
      */
-    public function sendRequests($requests)
+    public function send($requests)
     {
         //这里将来改用连接池实现
         foreach ($requests as $key => $request) {
-            $requests[$key] = $this->httpClient->send($request);
+            $requests[$key] = $this->httpClient->sendAsync($request);
         }
-
-        return $requests;
 
         return \GuzzleHttp\Promise\unwrap($requests);
     }

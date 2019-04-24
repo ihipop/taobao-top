@@ -3,8 +3,8 @@
 namespace ihipop\TaobaoTop\security;
 
 use Exception;
+use ihipop\TaobaoTop\Application;
 use ihipop\TaobaoTop\cache\NullCacheClient;
-use ihipop\TaobaoTop\client\TopClient;
 use ihipop\TaobaoTop\requests\taobao\GetTopSecret;
 
 class SecurityClient
@@ -23,14 +23,14 @@ class SecurityClient
      */
     private $cacheClient;
 
-    function __construct(TopClient $client, $secureRandomNum)
+    function __construct(Application $app)
     {
 
-        $this->topClient       = $client;
-        $this->secureRandomNum = $secureRandomNum;
+        $this->topClient       = $app->get('topClient');
+        $this->secureRandomNum = $app->getConfig('topClient.secureRandomNum');
 
         $this->securityUtil = new SecurityUtil();
-        $this->cacheClient  = new NullCacheClient();
+        $this->cacheClient  = $app->get('cache');
     }
 
     /**
