@@ -5,7 +5,7 @@
 
 namespace ihipop\TaobaoTop;
 
-use ihipop\TaobaoTop\providers\GuzzleTopClientServiceProvider;
+use ihipop\TaobaoTop\providers\GuzzleHttpClientServiceProvider;
 use ihipop\TaobaoTop\providers\NullCacheServiceProvider;
 use ihipop\TaobaoTop\providers\NullLoggerServiceProvider;
 use ihipop\TaobaoTop\providers\SecurityServiceProvider;
@@ -98,9 +98,9 @@ class Application extends Container implements \Psr\Container\ContainerInterface
                     'secureRandomNum' => 'qawsed',
                 ],
                 'providers' => [
-                    'cache'     => NullCacheServiceProvider::class,
-                    'logger'    => NullLoggerServiceProvider::class,
-                    'topClient' => GuzzleTopClientServiceProvider::class,
+                    'cache'  => NullCacheServiceProvider::class,
+                    'logger' => NullLoggerServiceProvider::class,
+                    'http'   => GuzzleHttpClientServiceProvider::class,
                 ],
             ];
 

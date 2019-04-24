@@ -5,14 +5,12 @@ namespace ihipop\TaobaoTop\client;
 use ihipop\TaobaoTop\Application;
 use ihipop\TaobaoTop\exceptions\TaobaoTopServerSideException;
 use ihipop\TaobaoTop\exceptions\TokenInvalidException;
-use ihipop\TaobaoTop\requests\RawTopRequest;
-use ihipop\TaobaoTop\requests\TopRequest;
 use ihipop\TaobaoTop\security\SecurityClient;
 use ihipop\TaobaoTop\utility\Arr;
 use ihipop\TaobaoTop\utility\Str;
 use Psr\Http\Message\ResponseInterface;
 
-abstract class TopClient extends AbstractHttpApiClient
+class TopClient extends AbstractHttpApiClient
 {
 
     public    $app;
@@ -113,16 +111,6 @@ abstract class TopClient extends AbstractHttpApiClient
         return strtoupper(md5($stringToBeSigned));
     }
 
-    public function createRequest(string $requestClass = RawTopRequest::class, array $args = []): TopRequest
-    {
-        $request = parent::createRequest($requestClass, $args);
-        $request->setData([
-            'app_key'     => $this->appKey,
-            'sign_method' => $this->signMethod,
-            'partner_id'  => $this->sdkVersion,
-        ], true);
-    }
-
     /**
      * @param array $requests
      *
@@ -166,6 +154,14 @@ abstract class TopClient extends AbstractHttpApiClient
         }
 
         return $responses;
+    }
+
+    public function send($request)
+    {
+        /** @var  $provider \ihipop\TaobaoTop\providers\GuzzleHttpClientServiceProvider */
+        $provider = $this->app->getConfig('providers.http');
+
+        return $provider::handle($this->app->get('httpClient'), $request);
     }
 
     public function parseResponse(ResponseInterface $response, $format = "json")

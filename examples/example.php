@@ -11,7 +11,7 @@ $application = new \ihipop\TaobaoTop\Application([
         'secureRandomNum' => 'qawsed',
     ],
     'providers' => [
-        'topClient' => \ihipop\TaobaoTop\providers\GuzzleTopClientServiceProvider::class,
+        'http' => \ihipop\TaobaoTop\providers\GuzzleHttpClientServiceProvider::class,
     ],
 ]);
 $topClient   = $application->topClient;

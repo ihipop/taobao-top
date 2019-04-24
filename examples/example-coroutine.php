@@ -9,7 +9,7 @@ go(function () {
             'secureRandomNum' => 'qawsed',
         ],
         'providers' => [
-            'topClient' => \ihipop\TaobaoTop\providers\SaberTopClientServiceProvider::class,
+            'http' => \ihipop\TaobaoTop\providers\SaberHttpClientServiceProvider::class,
         ],
     ]);
     $topClient   = $application->topClient;

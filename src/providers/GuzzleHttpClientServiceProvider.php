@@ -12,7 +12,7 @@ use ihipop\TaobaoTop\client\GuzzleTopClient;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 
-class GuzzleTopClientServiceProvider implements ServiceProviderInterface
+class GuzzleHttpClientServiceProvider implements ServiceProviderInterface
 {
 
     /**
@@ -34,9 +34,19 @@ class GuzzleTopClientServiceProvider implements ServiceProviderInterface
             return new Client($config);
         });
         $pimple->offsetSet('topClient', function (Application $app) {
-            return $client = new GuzzleTopClient($app);
+            return $client = new \ihipop\TaobaoTop\client\TopClient($app);
         });
         $pimple->offsetGet('httpClient');
         $pimple->offsetGet('topClient');
+    }
+
+    public static function handle(\GuzzleHttp\Client $client, $requests)
+    {
+        //这里将来改用连接池实现
+        foreach ((array)$requests as $key => $request) {
+            $requests[$key] = $client->sendAsync($request);
+        }
+
+        return \GuzzleHttp\Promise\unwrap($requests);
     }
 }
