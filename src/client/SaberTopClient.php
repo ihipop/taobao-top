@@ -5,7 +5,7 @@ namespace ihipop\TaobaoTop\client;
 use Swlib\Http\Uri;
 use Swoole\Coroutine\Channel;
 
-class SaberTopClient extends AbstractHttpApiClient
+class SaberTopClient extends TopClient
 {
 
     /** @var $httpClient \Swlib\Saber */
