@@ -98,9 +98,9 @@ class Application extends Container implements \Psr\Container\ContainerInterface
                     'secureRandomNum' => 'qawsed',
                 ],
                 'providers' => [
-                    'cache'  => NullCacheServiceProvider::class,
-                    'logger' => NullLoggerServiceProvider::class,
-                    'client' => GuzzleTopClientServiceProvider::class,
+                    'cache'     => NullCacheServiceProvider::class,
+                    'logger'    => NullLoggerServiceProvider::class,
+                    'topClient' => GuzzleTopClientServiceProvider::class,
                 ],
             ];
 

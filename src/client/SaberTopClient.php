@@ -22,7 +22,9 @@ class SaberTopClient extends TopClient
             $psr = $psr->withUri(new Uri((string)$request->getUri()));
             $psr = $psr->withHeaders($request->getHeaders());
             $psr = $psr->withBody($request->getBody());
-            $chan->push([$key => $psr->exec()->recv()]);
+            \Swoole\Coroutine::create(function () use ($chan, $key, $psr) {
+                $chan->push([$key => $psr->exec()->recv()]);
+            });
         }
 
         for ($i = 1; $i <= $total; $i++) {

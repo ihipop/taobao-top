@@ -2,11 +2,14 @@
 require __DIR__ . '/../vendor/autoload.php';
 \Swoole\Runtime::enableCoroutine();
 go(function () {
-    $application = \ihipop\TaobaoTop\client\Factory::saberTopClient([
+    $application = new \ihipop\TaobaoTop\Application([
         'topClient' => [
             'apiKey'          => '1234567',
             'apiSecret'       => 'qwerty.',
             'secureRandomNum' => 'qawsed',
+        ],
+        'providers' => [
+            'topClient' => \ihipop\TaobaoTop\providers\SaberTopClientServiceProvider::class,
         ],
     ]);
     $topClient   = $application->topClient;

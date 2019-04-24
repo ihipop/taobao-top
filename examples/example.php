@@ -4,11 +4,14 @@
  */
 
 require __DIR__ . '/../vendor/autoload.php';
-$application = \ihipop\TaobaoTop\client\Factory::guzzleTopClient([
+$application = new \ihipop\TaobaoTop\Application([
     'topClient' => [
         'apiKey'          => '1234567',
         'apiSecret'       => 'qwerty.',
         'secureRandomNum' => 'qawsed',
+    ],
+    'providers' => [
+        'topClient' => \ihipop\TaobaoTop\providers\GuzzleTopClientServiceProvider::class,
     ],
 ]);
 $topClient   = $application->topClient;
