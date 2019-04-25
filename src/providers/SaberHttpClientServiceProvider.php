@@ -3,11 +3,10 @@
 namespace ihipop\TaobaoTop\providers;
 
 use ihipop\TaobaoTop\Application;
+use ihipop\TaobaoTop\client\Adapter\SaberAdapter;
 use ihipop\TaobaoTop\client\SaberTopClient;
-use ihipop\TaobaoTop\client\TopClient;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
-use Swlib\Http\Uri;
 use Swlib\Saber;
 
 class SaberHttpClientServiceProvider implements ServiceProviderInterface
@@ -29,55 +28,11 @@ class SaberHttpClientServiceProvider implements ServiceProviderInterface
         $pimple->offsetSet('httpClient', function (Application $app) {
             return Saber::create($app->getConfig('http.saber_config'));
         });
-        $pimple->offsetSet('topClient', function (Application $app) {
-            return $client = new TopClient($app);
+        $pimple->offsetSet('httpClientAdapter', function (Application $app) {
+            return new SaberAdapter($app->offsetGet('httpClient'));
         });
+
         $pimple->offsetGet('httpClient');
-        $pimple->offsetGet('topClient');
+        $pimple->offsetGet('httpClientAdapter');
     }
-
-    public static function handle(Saber $client, $requests)
-    {
-        $result = [];
-        $total  = count($requests);
-        $chan   = new \Swoole\Coroutine\Channel($total);
-        foreach ($requests as $key => $request) {
-            /** @var  $request \Psr\Http\Message\RequestInterface */
-            $psr = $client->psr(['use_pool' => true]);
-            $psr = $psr->withMethod($request->getMethod());
-            $psr = $psr->withUri(new Uri((string)$request->getUri()));
-            $psr = $psr->withHeaders($request->getHeaders());
-            $psr = $psr->withBody($request->getBody());
-            \Swoole\Coroutine::create(function () use ($chan, $key, $psr) {
-                $chan->push([$key => $psr->exec()->recv()]);
-            });
-        }
-
-        for ($i = 1; $i <= $total; $i++) {
-            $result += $chan->pop();
-        }
-
-        return $result;
-    }
-
-    //    public function sendExample2($requests)
-    //    {
-    //        $batch = [];
-    //        foreach ($requests as $key => $request) {
-    //            /** @var  $request \Psr\Http\Message\RequestInterface */
-    //            $psr         = $this->httpClient->psr(['use_pool' => true]);
-    //            $psr         = $psr->withMethod($request->getMethod());
-    //            $psr         = $psr->withUri(new Uri((string)$request->getUri()));
-    //            $psr         = $psr->withHeaders($request->getHeaders());
-    //            $psr         = $psr->withBody($request->getBody());
-    //            $batch[$key] = [
-    //                'uri'     => (string)$psr->getUri(),
-    //                'method'  => $psr->getMethod(),
-    //                'headers' => $psr->getHeaders(),
-    //                'data'    => $psr->getBody(),
-    //            ];
-    //        }
-    //
-    //        return $this->httpClient->requests($batch);
-    //    }
 }

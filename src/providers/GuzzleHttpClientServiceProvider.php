@@ -8,7 +8,7 @@ namespace ihipop\TaobaoTop\providers;
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use ihipop\TaobaoTop\Application;
-use ihipop\TaobaoTop\client\GuzzleTopClient;
+use ihipop\TaobaoTop\client\Adapter\GuzzleAdapter;
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 
@@ -33,20 +33,11 @@ class GuzzleHttpClientServiceProvider implements ServiceProviderInterface
 
             return new Client($config);
         });
-        $pimple->offsetSet('topClient', function (Application $app) {
-            return $client = new \ihipop\TaobaoTop\client\TopClient($app);
+        $pimple->offsetSet('httpClientAdapter', function (Application $app) {
+            return new GuzzleAdapter($app->offsetGet('httpClient'));
         });
+
         $pimple->offsetGet('httpClient');
-        $pimple->offsetGet('topClient');
-    }
-
-    public static function handle(\GuzzleHttp\Client $client, $requests)
-    {
-        //这里将来改用连接池实现
-        foreach ((array)$requests as $key => $request) {
-            $requests[$key] = $client->sendAsync($request);
-        }
-
-        return \GuzzleHttp\Promise\unwrap($requests);
+        $pimple->offsetGet('httpClientAdapter');
     }
 }

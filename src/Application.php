@@ -9,6 +9,7 @@ use ihipop\TaobaoTop\providers\GuzzleHttpClientServiceProvider;
 use ihipop\TaobaoTop\providers\NullCacheServiceProvider;
 use ihipop\TaobaoTop\providers\NullLoggerServiceProvider;
 use ihipop\TaobaoTop\providers\SecurityServiceProvider;
+use ihipop\TaobaoTop\providers\TopClientServiceProvider;
 use ihipop\TaobaoTop\utility\Arr;
 use Pimple\Container;
 
@@ -28,7 +29,8 @@ class Application extends Container implements \Psr\Container\ContainerInterface
      */
     protected $userConfig = [];
     protected $providers  = [
-        'security' => SecurityServiceProvider::class,
+        'security'  => SecurityServiceProvider::class,
+        'topClient' => TopClientServiceProvider::class,
     ];
 
     /**

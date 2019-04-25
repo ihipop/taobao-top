@@ -156,12 +156,12 @@ class TopClient extends AbstractHttpApiClient
         return $responses;
     }
 
-    public function send($request)
+    public function send($requests)
     {
-        /** @var  $provider \ihipop\TaobaoTop\providers\GuzzleHttpClientServiceProvider */
-        $provider = $this->app->getConfig('providers.http');
+        /** @var  $adaptor \ihipop\TaobaoTop\client\Adapter\GuzzleAdapter |\ihipop\TaobaoTop\client\Adapter\SaberAdapter */
+        $adaptor = $this->app->get('httpClientAdapter');
 
-        return $provider::handle($this->app->get('httpClient'), $request);
+        return $adaptor->send($requests);
     }
 
     public function parseResponse(ResponseInterface $response, $format = "json")
