@@ -17,7 +17,7 @@ class GuzzleAdapter
     public function __construct(Client $client)
     {
         $this->httpClient = $client;;
-        if (class_exists('\Swoole\Coroutine')) {
+        if (class_exists('\Swoole\Coroutine') && $client->getConfig('force_handler_over_ride')) {
             $this->streamHandler = HandlerStack::create(new \GuzzleHttp\Handler\StreamHandler());
         }
     }
@@ -26,7 +26,7 @@ class GuzzleAdapter
     {
         $config = [];
         if ($this->streamHandler && (\Co::getuid() > 1)) {
-            $config['handler'] = HandlerStack::create(new \GuzzleHttp\Handler\StreamHandler());
+            $config['handler'] = $this->streamHandler;
         }
         //这里将来改用连接池实现
         foreach ((array)$requests as $key => $request) {

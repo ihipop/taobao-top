@@ -26,6 +26,9 @@ class GuzzleHttpClientServiceProvider implements ServiceProviderInterface
     {
         $pimple->offsetSet('httpClient', function (Application $app) {
             $config = $app->getConfig('http.guzzle_config');
+            if (empty($config['handler'])) {
+                $config['force_handler_over_ride'] = true;
+            }
 
             return new Client($config);
         });
