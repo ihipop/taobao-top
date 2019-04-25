@@ -14,15 +14,10 @@ use ihipop\TaobaoTop\requests\TopRequest;
  */
 class AddTmcGroup extends TopRequest
 {
-    
-    protected $apiName;
-    protected $paramKeys    = [
-        'groupName',
-        'nicks'
-    ];
 
-    public function check()
-    {
-        //RequestCheckUtil::checkNotNull($this->fields, "fields");
-    }
+    protected $apiName;
+    protected $paramKeys = [
+        'groupName',
+        'nicks',
+    ];
 }

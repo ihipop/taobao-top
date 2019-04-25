@@ -2,9 +2,7 @@
 
 namespace ihipop\TaobaoTop\security;
 
-use Exception;
-use ihipop\TaobaoTop\cache\NullCacheClient;
-use ihipop\TaobaoTop\client\TopClient;
+use ihipop\TaobaoTop\Application;
 use ihipop\TaobaoTop\requests\taobao\GetTopSecret;
 
 class SecurityClient
@@ -19,44 +17,36 @@ class SecurityClient
     // 见 http://bigdata.taobao.com/doc.htm?docId=106214&docType=1
     private $securityUtil;
     /**
-     * @var $cacheClient \Psr\SimpleCache\CacheInterface
+     * @var $cache \Psr\SimpleCache\CacheInterface
      */
-    private $cacheClient;
+    private $cache;
+    private $logger;
+    private $app;
 
-    function __construct(TopClient $client, $secureRandomNum)
+    function __construct(Application $app)
     {
 
-        $this->topClient       = $client;
-        $this->secureRandomNum = $secureRandomNum;
+        $this->topClient       = $app->get('topClient');
+        $this->secureRandomNum = $app->getConfig('topClient.secureRandomNum');
 
         $this->securityUtil = new SecurityUtil();
-        $this->cacheClient  = new NullCacheClient();
+        $this->app          = $app;
     }
 
     /**
      * @return \Psr\Log\LoggerInterface|\Psr\Log\NullLogger
      */
-    protected function logger()
+    protected function getLogger()
     {
-        return $this->topClient->getLogger();
+        return $this->logger ?: ($this->logger = $this->app->get('logger'));
     }
 
     /**
      * @return \Psr\SimpleCache\CacheInterface
      */
-    protected function cache()
+    protected function getCache()
     {
-        return $this->cacheClient ?: ($this->cacheClient = new NullCacheClient());
-    }
-
-    /**
-     * 设置缓存处理器
-     */
-    function setCacheClient(\Psr\SimpleCache\CacheInterface $cache)
-    {
-        $this->cacheClient = $cache;
-
-        return $this;
+        return $this->cache ?: ($this->cache = $this->app->get('cache'));
     }
 
     /**
@@ -129,7 +119,7 @@ class SecurityClient
             return $data;
         }
         $secretData = $this->securityUtil->getSecretDataByType($data, $type);
-        $this->logger()->debug('获得密钥对象', ['secretData' => $secretData]);
+        $this->getLogger()->debug('获得密钥对象', ['secretData' => $secretData]);
         if (empty($secretData)) {
             return $data;
         }
@@ -378,7 +368,7 @@ class SecurityClient
     {
         $cacheKey = $this->buildCacheKey($session, $secretVersion);
 
-        return $this->cache()->delete($cacheKey);
+        return $this->getCache()->delete($cacheKey);
     }
 
     /**
@@ -390,12 +380,12 @@ class SecurityClient
         /** @var  $cacheItem  \ihipop\TaobaoTop\security\SecretContext */
         $cacheItem = null;
         /** @var  $cahceClient  \Symfony\Component\Cache\Simple\AbstractCache */
-        $cahceClient = $this->cache();
+        $cahceClient = $this->getCache();
 
         if ($allowCache) {
             $cacheItem = $cahceClient->get($cacheKey);
             if (!empty($cacheItem)) {
-                $this->logger()->debug('从缓存里面取得解密密钥:', [
+                $this->getLogger()->debug('从缓存里面取得解密密钥:', [
                     'cacheContext' => $cacheItem,
                     'session'      => $session,
                     'version'      => $secretVersion,
@@ -415,7 +405,7 @@ class SecurityClient
 
         $cahceClient->set($cacheKey, $cacheItem, $cacheItem->invalidTime - time());
 
-        $this->logger()->debug('从远程服务器取得解密密钥:', [
+        $this->getLogger()->debug('从远程服务器取得解密密钥:', [
             'cacheContext' => $cacheItem,
             'session'      => $session,
             'version'      => $secretVersion,
@@ -523,10 +513,7 @@ class SecurityClient
 
         $now      = time();
         $response = $this->topClient->execute($request);
-        if ((string)($response['code'] ?? 0) != (string)0) {
-            throw new Exception($response['sub_msg'] ?? $response['msg'], $response['sub_code'] ?? $response['code']);
-        }
-
+       
         $secretContext                 = new SecretContext();
         $secretContext->maxInvalidTime = $now + (int)($response['max_interval']);//容灾用 可能是到达 interval 时间后还能使用的时间
         $secretContext->invalidTime    = $now + (int)($response['interval']);
