@@ -18,7 +18,12 @@ class SaberAdapter
         $this->httpClient = $client;
     }
 
-    public function send($requests)
+    /**
+     * @param $requests \Psr\Http\Message\RequestInterface[]
+     *
+     * @return array|mixed
+     */
+    public function send(array $requests)
     {
         $result = [];
         $total  = count($requests);

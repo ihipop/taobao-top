@@ -22,7 +22,12 @@ class GuzzleAdapter
         }
     }
 
-    public function send($requests)
+    /**
+     * @param $requests \Psr\Http\Message\RequestInterface[]
+     *
+     * @return array|mixed
+     */
+    public function send(array $requests)
     {
         $config = [];
         if ($this->streamHandler && (\Co::getuid() > 1)) {
