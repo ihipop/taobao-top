@@ -6,22 +6,31 @@
 namespace ihipop\TaobaoTop\client\Adapter;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\HandlerStack;
 
 class GuzzleAdapter
 {
 
     protected $httpClient;
+    protected $streamHandler;
 
     public function __construct(Client $client)
     {
-        $this->httpClient = $client;
+        $this->httpClient = $client;;
+        if (class_exists('\Swoole\Coroutine')) {
+            $this->streamHandler = HandlerStack::create(new \GuzzleHttp\Handler\StreamHandler());
+        }
     }
 
     public function send($requests)
     {
+        $config = [];
+        if ($this->streamHandler && (\Co::getuid() > 1)) {
+            $config['handler'] = HandlerStack::create(new \GuzzleHttp\Handler\StreamHandler());
+        }
         //这里将来改用连接池实现
         foreach ((array)$requests as $key => $request) {
-            $requests[$key] = $this->httpClient->sendAsync($request);
+            $requests[$key] = $this->httpClient->sendAsync($request, $config);
         }
 
         return \GuzzleHttp\Promise\unwrap($requests);

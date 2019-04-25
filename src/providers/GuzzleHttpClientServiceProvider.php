@@ -6,7 +6,6 @@
 namespace ihipop\TaobaoTop\providers;
 
 use GuzzleHttp\Client;
-use GuzzleHttp\HandlerStack;
 use ihipop\TaobaoTop\Application;
 use ihipop\TaobaoTop\client\Adapter\GuzzleAdapter;
 use Pimple\Container;
@@ -27,9 +26,6 @@ class GuzzleHttpClientServiceProvider implements ServiceProviderInterface
     {
         $pimple->offsetSet('httpClient', function (Application $app) {
             $config = $app->getConfig('http.guzzle_config');
-            if (class_exists('\Swoole\Coroutine') && (\Co::getuid() > 1) && empty($config['handler'])) {
-                $config['handler'] = HandlerStack::create(new \GuzzleHttp\Handler\StreamHandler());
-            }
 
             return new Client($config);
         });
