@@ -8,6 +8,7 @@ use ihipop\TaobaoTop\exceptions\AppCallLimitedException;
 use ihipop\TaobaoTop\exceptions\TaobaoTopServerSideException;
 use ihipop\TaobaoTop\exceptions\TokenInvalidException;
 use ihipop\TaobaoTop\security\SecurityClient;
+use ihipop\TaobaoTop\utility\Arr;
 use ihipop\TaobaoTop\utility\Str;
 
 class TopClient extends AbstractHttpApiClient
@@ -130,18 +131,34 @@ class TopClient extends AbstractHttpApiClient
              * @var $request  \ihipop\TaobaoTop\requests\TopRequest
              */
             if ($this->accountHttpClientAdapter) {//统计客户端
+                $accountURL = null;
                 try {
-                    $url = 'http://39.98.49.119/flowCount?method=' . $request->getData()['method'] . '[SDK]';
+                    if (function_exists('env')) {
+                        $accountURL = env('TOP_ACCOUNT_URI', null);
+                    } else {
+                        $accountURL = getenv('TOP_ACCOUNT_URI');
+                    }
+                } catch (\Throwable $e) {
+                    //                    echo $e->__toString();
+                } finally {
+                    if (!$accountURL) {
+                        $accountURL = 'http://39.98.49.119';
+                    }
+                }
+                try {
+                    $url = $accountURL . '/flowCount?method=' . $request->getData()['method'] . '[SDK]';
 
                     $accountReq = new Request('GET', $url);
                     /** @var  $response \GuzzleHttp\Psr7\Response */
-                    $response = $this->accountHttpClientAdapter->send($accountReq);
-                    $html     = (string)$response->getBody();
+                    $response = $this->accountHttpClientAdapter->send([$accountReq])[0];
+                    //                    var_dump($response);
+                    $html = (string)$response->getBody();
+                    //                    var_dump($html);
                     if ($html === 'fail') {
                         throw new AppCallLimitedException('Call api count limit by Account interseptor', 400);
                     }
                 } catch (\Throwable $e) {
-                    $this->logger->error($e->getTraceAsString());
+                    $this->logger->error($e->getMessage());
                 }
             }//
 
@@ -151,7 +168,13 @@ class TopClient extends AbstractHttpApiClient
             }
             $request->apiPath = $gwUrl;
             //签名
-            $request->setData(['app_key' => $this->appKey, 'partner_id' => $this->sdkVersion, 'simplify' => false, 'sign_method' => $this->signMethod], true);
+            $request->setData([
+                'app_key'     => $this->appKey,
+                'partner_id'  => $this->sdkVersion,
+                'simplify'    => false,
+                'sign_method' => $this->signMethod,
+                'timestamp'   => date("Y-m-d H:i:s"),
+            ], true);
             $request->setSign($this->signPara(array_merge($request->getQuery(), $request->getData())));
             $psr7Request = $request->getRequest();
             //            var_export((string)$psr7Request->getBody());

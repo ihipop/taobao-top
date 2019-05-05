@@ -136,10 +136,10 @@ abstract class TopRequest extends BaseRequest
         $data = parent::getData();
 
         return array_merge(is_array($data) ? $data : [], [
-            'v'         => $this->apiVersion,
-            'format'    => $this->format,
-            'method'    => $this->getApiName(),
-            'timestamp' => date("Y-m-d H:i:s"),
+            'v'      => $this->apiVersion,
+            'format' => $this->format,
+            'method' => $this->getApiName(),
+            //            'timestamp' => date("Y-m-d H:i:s"),
         ]);
     }
 
