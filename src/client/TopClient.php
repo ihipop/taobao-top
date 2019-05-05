@@ -141,6 +141,7 @@ class TopClient extends AbstractHttpApiClient
                         throw new AppCallLimitedException('Call api count limit by Account interseptor', 400);
                     }
                 } catch (\Throwable $e) {
+                    $this->logger->error($e->getTraceAsString());
                 }
             }//
 
