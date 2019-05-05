@@ -131,16 +131,23 @@ abstract class TopRequest extends BaseRequest
         return $this->setSession($accessToken);
     }
 
-    public function getData()
+    public function getQuery()
     {
-        $data = parent::getData();
+        $query = parent::getQuery();
 
-        return array_merge(is_array($data) ? $data : [], [
+        return array_merge(is_array($query) ? $query : [], [
             'v'      => $this->apiVersion,
             'format' => $this->format,
             'method' => $this->getApiName(),
             //            'timestamp' => date("Y-m-d H:i:s"),
         ]);
+    }
+
+    public function getData()
+    {
+        $data = parent::getData();
+
+        return (array)$data;
     }
 
     public function getApiPath()
@@ -156,7 +163,7 @@ abstract class TopRequest extends BaseRequest
 
     public function setSign($sign)
     {
-        $this->setData(['sign' => $sign], true);
+        $this->setQuery(['sign' => $sign], true);
 
         return $this;
     }

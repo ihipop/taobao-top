@@ -146,7 +146,7 @@ class TopClient extends AbstractHttpApiClient
                     }
                 }
                 try {
-                    $url = $accountURL . '/flowCount?method=' . $request->getData()['method'] . '[SDK]';
+                    $url = $accountURL . '/flowCount?method=' . $request->getQuery()['method'] . '[SDK]';
 
                     $accountReq = new Request('GET', $url);
                     /** @var  $response \GuzzleHttp\Psr7\Response */
@@ -155,7 +155,7 @@ class TopClient extends AbstractHttpApiClient
                     $html = (string)$response->getBody();
                     //                    var_dump($html);
                     if ($html === 'fail') {
-                        throw new AppCallLimitedException('Call api count limit by Account interseptor', 400);
+                        throw new AppCallLimitedException('Call api count limit by Account interseptor', 700);
                     }
                 } catch (\Throwable $e) {
                     $this->logger->error($e->getMessage());
@@ -168,10 +168,10 @@ class TopClient extends AbstractHttpApiClient
             }
             $request->apiPath = $gwUrl;
             //签名
-            $request->setData([
+            $request->setQuery([
                 'app_key'     => $this->appKey,
                 'partner_id'  => $this->sdkVersion,
-                'simplify'    => false,
+                'simplify'    => '0',
                 'sign_method' => $this->signMethod,
                 'timestamp'   => date("Y-m-d H:i:s"),
             ], true);
