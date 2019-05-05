@@ -155,7 +155,7 @@ class TopClient extends AbstractHttpApiClient
                     $html = (string)$response->getBody();
                     //                    var_dump($html);
                     if ($html === 'fail') {
-                        throw new AppCallLimitedException('Call api count limit by Account interseptor', 700);
+                        throw new AppCallLimitedException('Call api count limit by Account interseptor', 777);
                     }
                 } catch (\Throwable $e) {
                     $this->logger->error($e->getMessage());
