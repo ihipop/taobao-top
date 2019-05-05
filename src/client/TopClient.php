@@ -171,7 +171,7 @@ class TopClient extends AbstractHttpApiClient
             $request->setQuery([
                 'app_key'     => $this->appKey,
                 'partner_id'  => $this->sdkVersion,
-                'simplify'    => '0',
+                'simplify'    => 'true',
                 'sign_method' => $this->signMethod,
                 'timestamp'   => date("Y-m-d H:i:s"),
             ], true);
@@ -211,7 +211,7 @@ class TopClient extends AbstractHttpApiClient
         if ("json" === $format) {
             $decodedResponse = json_decode((string)$response->getBody(), true);
             if (null !== $decodedResponse) {
-                $result = current($decodedResponse);
+                $result = ($decodedResponse);
             } else {
                 throw new \Exception('Invalid Json Response');
             }
