@@ -63,7 +63,7 @@ class GetTradesSold extends TopRequest
     //        'pay_id'  => 'trades.trade@alipay_id',
     //    ];
     public $encryptedFields = [
-        'trades.trade' => [
+        'trades' => [
             '@' => [//订单1
                 'receiver_name'                => 'name',
                 'buyer_nick'                   => 'nick',

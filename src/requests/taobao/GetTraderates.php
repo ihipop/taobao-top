@@ -50,7 +50,7 @@ class GetTraderates extends TopRequest
         'numIid',
     ];
     public    $encryptedFields      = [
-        'trade_rates.trade_rate' => [
+        'trade_rates' => [
             '@' => [//订单1
                 'nick' => 'nick',
             ],
