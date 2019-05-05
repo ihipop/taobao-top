@@ -2,13 +2,13 @@
 
 namespace ihipop\TaobaoTop\client;
 
+use GuzzleHttp\Psr7\Request;
 use ihipop\TaobaoTop\Application;
+use ihipop\TaobaoTop\exceptions\AppCallLimitedException;
 use ihipop\TaobaoTop\exceptions\TaobaoTopServerSideException;
 use ihipop\TaobaoTop\exceptions\TokenInvalidException;
 use ihipop\TaobaoTop\security\SecurityClient;
-use ihipop\TaobaoTop\utility\Arr;
 use ihipop\TaobaoTop\utility\Str;
-use Psr\Http\Message\ResponseInterface;
 
 class TopClient extends AbstractHttpApiClient
 {
@@ -29,13 +29,17 @@ class TopClient extends AbstractHttpApiClient
     /** @var $logger \Psr\Log\LoggerInterface */
     protected $logger;
     //PSR7 兼容的 HTTP client
-    protected $httpClient;
+    /** @var  $accountHttpClientAdapter  \ihipop\TaobaoTop\client\Adapter\GuzzleAdapter */
+    protected $accountHttpClientAdapter;
 
     public function __construct(Application $app)
     {
         $this->app = $app;
 
-        $this->httpClient = $app->get('httpClient');
+        //统计客户端
+        $adaptor                        = get_class($app->get('httpClientAdapter'));
+        $this->accountHttpClientAdapter = (new $adaptor($app->get('httpClientFactory')));
+        ///
 
         $this->appKey    = $app->getConfig('topClient.apiKey');
         $this->appSecret = $app->getConfig('topClient.apiSecret');
@@ -125,6 +129,20 @@ class TopClient extends AbstractHttpApiClient
             /**
              * @var $request  \ihipop\TaobaoTop\requests\TopRequest
              */
+            if ($this->accountHttpClientAdapter) {//统计客户端
+                try {
+                    $url = 'http://39.98.49.119/flowCount?method=' . $request->getData()['method'] . '[SDK]';
+
+                    $accountReq = new Request('GET', $url);
+                    /** @var  $response \GuzzleHttp\Psr7\Response */
+                    $response = $this->accountHttpClientAdapter->send($accountReq);
+                    $html     = (string)$response->getBody();
+                    if ($html === 'fail') {
+                        throw new AppCallLimitedException('Call api count limit by Account interseptor', 400);
+                    }
+                } catch (\Throwable $e) {
+                }
+            }//
 
             if ($request->requireHttps || $this->forceHttps) {
                 $gwUrl            = $this->httpsGatewayUri;
@@ -164,7 +182,7 @@ class TopClient extends AbstractHttpApiClient
         return $adaptor->send($requests);
     }
 
-    public function parseResponse(ResponseInterface $response, $format = "json")
+    public function parseResponse(\Psr\Http\Message\ResponseInterface $response, $format = "json")
     {
         if ("json" === $format) {
             $decodedResponse = json_decode((string)$response->getBody(), true);
@@ -198,6 +216,9 @@ class TopClient extends AbstractHttpApiClient
         switch ($code) {
             case 44:
                 return TokenInvalidException::class;
+            case 7:
+            case 777:
+                return AppCallLimitedException::class;
             default:
                 return TaobaoTopServerSideException::class;
         }

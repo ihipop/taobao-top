@@ -25,8 +25,12 @@ class SaberHttpClientServiceProvider implements ServiceProviderInterface
         if (\Swoole\Coroutine::getuid() < 0) {
             throw new \RuntimeException('Saber Must run under Coroutine');
         }
-        $pimple->offsetSet('httpClient', function (Application $app) {
+        $pimple->offsetSet('httpClientFactory', $pimple->factory(function (Application $app) {
             return Saber::create($app->getConfig('http.saber_config'));
+        }));
+
+        $pimple->offsetSet('httpClient', function (Application $app) {
+            return $app->offsetGet('httpClientFactory');
         });
         $pimple->offsetSet('httpClientAdapter', function (Application $app) {
             return new SaberAdapter($app->offsetGet('httpClient'));

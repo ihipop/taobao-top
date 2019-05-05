@@ -24,13 +24,16 @@ class GuzzleHttpClientServiceProvider implements ServiceProviderInterface
      */
     public function register(Container $pimple)
     {
-        $pimple->offsetSet('httpClient', function (Application $app) {
+        $pimple->offsetSet('httpClientFactory', $pimple->factory(function (Application $app) {
             $config = $app->getConfig('http.guzzle_config');
             if (empty($config['handler'])) {
                 $config['force_handler_over_ride'] = true;
             }
 
             return new Client($config);
+        }));
+        $pimple->offsetSet('httpClient', function (Application $app) {
+            return $app->offsetGet('httpClientFactory');
         });
         $pimple->offsetSet('httpClientAdapter', function (Application $app) {
             return new GuzzleAdapter($app->offsetGet('httpClient'));
