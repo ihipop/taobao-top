@@ -88,12 +88,12 @@ class Application extends Container implements \Psr\Container\ContainerInterface
                         'use_pool' => true,
                     ],
                 ],
-                'request'   => [
-                    'prop' => [
-                        'httpGatewayUri'  => "http://gw.api.taobao.com/router/rest",
-                        'httpsGatewayUri' => "https://eco.taobao.com/router/rest",
-                    ],
-                ],
+//                'request'   => [
+//                    'prop' => [
+//                        'httpGatewayUri'  => "http://gw.api.taobao.com/router/rest",
+//                        'httpsGatewayUri' => "https://eco.taobao.com/router/rest",
+//                    ],
+//                ],
                 'topClient' => [
                     'apiKey'          => '123456',
                     'apiSecret'       => 'qwerty.',

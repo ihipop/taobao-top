@@ -30,7 +30,7 @@ class GuzzleAdapter
     public function send(array $requests)
     {
         $config = [];
-        if ($this->streamHandler && (\Co::getuid() > 1)) {
+        if ($this->streamHandler && (\Swoole\Coroutine::getuid() > 1)) {
             $config['handler'] = $this->streamHandler;
         }
         //这里将来改用连接池实现

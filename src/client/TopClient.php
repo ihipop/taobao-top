@@ -92,7 +92,7 @@ class TopClient extends AbstractHttpApiClient
             $this->{$gateWay . 'HostnameOverride'} = str_replace('#', '', $hashTag);
             $uri                                   = str_replace($hashTag, '', $uri);
         } else {
-            $host                                  = parse_url($this->{$gateWay . 'GatewayUri'});
+            $host = parse_url($this->{$gateWay . 'GatewayUri'});
             $this->{$gateWay . 'HostnameOverride'} = $host['host'];
         }
         $this->{$gateWay . 'GatewayUri'} = $uri;
