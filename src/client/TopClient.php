@@ -73,8 +73,11 @@ class TopClient extends AbstractHttpApiClient
      *
      * @return $this
      */
-    public function setGatewayUri($uri, $secure = null)
+    public function setGatewayUri(string $uri, $secure = null)
     {
+        if (empty($uri)) {
+            return $this;
+        }
         if ($secure === null) {
             $uri    = strtolower($uri);
             $secure = Str::startsWith($uri, 'https') ?: false;
@@ -88,6 +91,9 @@ class TopClient extends AbstractHttpApiClient
         if ($hashTag !== false) {
             $this->{$gateWay . 'HostnameOverride'} = str_replace('#', '', $hashTag);
             $uri                                   = str_replace($hashTag, '', $uri);
+        } else {
+            $host                                  = parse_url($this->{$gateWay . 'GatewayUri'});
+            $this->{$gateWay . 'HostnameOverride'} = $host['host'];
         }
         $this->{$gateWay . 'GatewayUri'} = $uri;
 
