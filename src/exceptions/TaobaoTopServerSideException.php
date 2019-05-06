@@ -6,6 +6,8 @@ class TaobaoTopServerSideException extends \RuntimeException
 {
 
     public $subErrorCode;
+
+
     public $setSubErrorMessage;
 
     public function __construct(string $message = "", int $code = 0, \Throwable $previous = null)
@@ -25,5 +27,21 @@ class TaobaoTopServerSideException extends \RuntimeException
         $this->setSubErrorMessage = $setSubErrorMessage;
 
         return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSubErrorCode()
+    {
+        return $this->subErrorCode;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSetSubErrorMessage()
+    {
+        return $this->setSubErrorMessage;
     }
 }

@@ -6,6 +6,7 @@
 namespace ihipop\TaobaoTop\providers;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\HandlerStack;
 use ihipop\TaobaoTop\Application;
 use ihipop\TaobaoTop\client\Adapter\GuzzleAdapter;
 use Pimple\Container;
@@ -29,6 +30,9 @@ class GuzzleHttpClientServiceProvider implements ServiceProviderInterface
             if (empty($config['handler'])) {
                 if (!empty($config['getHandler']) && is_callable($config['getHandler'])) {
                     $config['handler'] = $config['getHandler']();
+                    if (!(($config['handler']) instanceof HandlerStack)) {
+                        throw new \Exception('$config[\'getHandler\'] must have to Return ' . HandlerStack::class);
+                    }
                 } else {
                     $config['force_handler_over_ride'] = true;
                 }

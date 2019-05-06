@@ -36,7 +36,15 @@ class SaberAdapter
             $psr = $psr->withHeaders($request->getHeaders());
             $psr = $psr->withBody($request->getBody());
             \Swoole\Coroutine::create(function () use ($chan, $key, $psr) {
-                $chan->push([$key => $psr->exec()->recv()]);
+                try {
+                    $chan->push([$key => $psr->exec()->recv()]);
+                } catch (\Swlib\Http\Exception\ConnectException $e) {
+                    if ($e->getCode() === -3) {//Connection is forcibly cut off by the remote server https://github.com/swlib/saber/issues/40
+                        $chan->push([$key => $psr->exec()->recv()]);
+                    } else {
+                        throw $e;
+                    }
+                }
             });
         }
 
