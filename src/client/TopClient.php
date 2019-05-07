@@ -92,7 +92,7 @@ class TopClient extends AbstractHttpApiClient
             $this->{$gateWay . 'HostnameOverride'} = str_replace('#', '', $hashTag);
             $uri                                   = str_replace($hashTag, '', $uri);
         } else {
-            $host = parse_url($this->{$gateWay . 'GatewayUri'});
+            $host                                  = parse_url($this->{$gateWay . 'GatewayUri'});
             $this->{$gateWay . 'HostnameOverride'} = $host['host'];
         }
         $this->{$gateWay . 'GatewayUri'} = $uri;
@@ -154,7 +154,7 @@ class TopClient extends AbstractHttpApiClient
                 try {
                     $url = $accountURL . '/flowCount?method=' . $request->getQuery()['method'] . '[SDK]';
 
-                    $accountReq = new Request('GET', $url);
+                    $accountReq = (new Request('GET', $url))->withHeader('User-Agent', $this->sdkVersion);
                     /** @var  $response \GuzzleHttp\Psr7\Response */
                     $response = $this->accountHttpClientAdapter->send([$accountReq])[0];
                     //                    var_dump($response);
