@@ -12,7 +12,7 @@ use ihipop\TaobaoTop\requests\TopRequest;
  * @method $this setNick($value)
  * @method getNick()
  */
-class GetShop extends TopRequest
+class GetShopSeller extends TopRequest
 {
     
     protected $apiName;
