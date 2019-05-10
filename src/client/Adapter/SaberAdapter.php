@@ -42,14 +42,18 @@ class SaberAdapter
                     if ($e->getCode() === -3) {//Connection is forcibly cut off by the remote server https://github.com/swlib/saber/issues/40
                         $chan->push([$key => $psr->exec()->recv()]);
                     } else {
-                        throw $e;
+                        $chan->push($e);
                     }
                 }
             });
         }
 
         while (!($chan->isEmpty() && $result)) {
-            $result += $chan->pop();
+            $ret = $chan->pop();
+            if ($ret instanceof \Throwable) {
+                throw $ret;
+            }
+            $result += $ret;
         }
 
         return $result;
