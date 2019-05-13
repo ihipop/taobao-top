@@ -217,7 +217,11 @@ class TopClient extends AbstractHttpApiClient
         if ("json" === $format) {
             $decodedResponse = json_decode((string)$response->getBody(), true);
             if (null !== $decodedResponse) {
-                $result = ($decodedResponse);
+                $result = $decodedResponse;
+                //启用json简洁返回并不能对错误信息生效
+                if(isset($result['error_response'])){
+                    $result = $result['error_response'];
+                }
             } else {
                 throw new \Exception('Invalid Json Response');
             }
@@ -245,6 +249,7 @@ class TopClient extends AbstractHttpApiClient
 
         switch ($code) {
             case 44:
+            case 27:
                 return TokenInvalidException::class;
             case 7:
             case 777:
