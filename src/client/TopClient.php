@@ -277,6 +277,7 @@ class TopClient extends AbstractHttpApiClient
         if ($instance instanceof TaobaoTopServerSideException) {
             $instance->setSubErrorCode($result['sub_code'] ?? null);
             $instance->setSubErrorMessage($result['sub_msg'] ?? null);
+            $instance->setResponseBody($result);
         }
 
         return $instance;

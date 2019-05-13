@@ -5,10 +5,11 @@ namespace ihipop\TaobaoTop\exceptions;
 class TaobaoTopServerSideException extends \RuntimeException
 {
 
-    public $subErrorCode;
+    protected $subErrorCode;
 
+    protected $responseBody;
 
-    public $setSubErrorMessage;
+    protected $subErrorMessage;
 
     public function __construct(string $message = "", int $code = 0, \Throwable $previous = null)
     {
@@ -40,8 +41,20 @@ class TaobaoTopServerSideException extends \RuntimeException
     /**
      * @return mixed
      */
-    public function getSetSubErrorMessage()
+    public function getSubErrorMessage()
     {
         return $this->setSubErrorMessage;
+    }
+
+    /**
+     * @param mixed $responseBody
+     *
+     * @return TaobaoTopServerSideException
+     */
+    public function setResponseBody($responseBody)
+    {
+        $this->responseBody = $responseBody;
+
+        return $this;
     }
 }
