@@ -219,10 +219,6 @@ class TopClient extends AbstractHttpApiClient
             $decodedResponse = json_decode((string)$response->getBody(), true);
             if (null !== $decodedResponse) {
                 $result = $decodedResponse;
-                //启用json简洁返回并不能对错误信息生效
-                if (isset($result['error_response'])) {
-                    $result = $result['error_response'];
-                }
             } else {
                 throw new \Exception('Invalid Json Response');
             }
@@ -236,6 +232,10 @@ class TopClient extends AbstractHttpApiClient
             }
         } else {
             throw new \RuntimeException('unknown format: ' . $format);
+        }
+        //启用json简洁返回并不能对错误信息生效
+        if (isset($result['error_response'])) {
+            $result = $result['error_response'];
         }
         if (!empty($result['code'])) {
             throw $this->getExceptionInstanceByResponce($result);
@@ -294,6 +294,8 @@ class TopClient extends AbstractHttpApiClient
      */
     protected function decryptRequest($response, $fieldsConfig, $session)
     {
+        file_put_contents('aaaaaaaa.txt',var_export($response,2));
+        var_dump($fieldsConfig);
         if (empty($fieldsConfig)) {
             return $response;
         }
