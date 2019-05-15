@@ -8,7 +8,7 @@ namespace ihipop\TaobaoTop\client\Adapter;
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 
-class GuzzleAdapter
+class GuzzleAdapter extends AbstractAdapter
 {
 
     protected $httpClient;
@@ -27,11 +27,15 @@ class GuzzleAdapter
      *
      * @return array|mixed
      */
-    public function send(array $requests)
+    public function send($requests, $timeout = null)
     {
-        $config = [];
+        $requests = (array)$requests;
+        $config   = [];
         if ($this->streamHandler && (\Swoole\Coroutine::getuid() > 1)) {
             $config['handler'] = $this->streamHandler;
+        }
+        if (null !== $timeout) {
+            $config['timeout'] = $timeout;
         }
         //这里将来改用连接池实现
         foreach ((array)$requests as $key => $request) {

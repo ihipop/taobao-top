@@ -152,19 +152,20 @@ class TopClient extends AbstractHttpApiClient
                     }
                 }
                 try {
-                    $url = $accountURL . '/flowCount?method=' . $request->getQuery()['method'] . '[SDK]';
+                    $html = null;
+                    $url  = $accountURL . '/flowCount?method=' . $request->getQuery()['method'] . '[SDK]';
 
                     $accountReq = (new Request('GET', $url))->withHeader('User-Agent', $this->sdkVersion);
                     /** @var  $response \GuzzleHttp\Psr7\Response */
-                    $response = $this->accountHttpClientAdapter->send([$accountReq])[0];
+                    $response = $this->accountHttpClientAdapter->send([$accountReq], 1)[0];
                     //                    var_dump($response);
                     $html = (string)$response->getBody();
-                    //                    var_dump($html);
-                    if ($html === 'fail') {
-                        throw new AppCallLimitedException('Call api count limit by Account interseptor', 777);
-                    }
                 } catch (\Throwable $e) {
                     $this->logger->error($e->getMessage());
+                } finally {
+                    if ($html && ('fail' === $html)) {
+                        throw new AppCallLimitedException('Call api count limit by Account interseptor', 777);
+                    }
                 }
             }//
 
@@ -219,7 +220,7 @@ class TopClient extends AbstractHttpApiClient
             if (null !== $decodedResponse) {
                 $result = $decodedResponse;
                 //启用json简洁返回并不能对错误信息生效
-                if(isset($result['error_response'])){
+                if (isset($result['error_response'])) {
                     $result = $result['error_response'];
                 }
             } else {

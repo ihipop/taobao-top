@@ -8,7 +8,7 @@ namespace ihipop\TaobaoTop\client\Adapter;
 use Swlib\Http\Uri;
 use Swlib\Saber;
 
-class SaberAdapter
+class SaberAdapter extends AbstractAdapter
 {
 
     protected $httpClient;
@@ -23,18 +23,23 @@ class SaberAdapter
      *
      * @return array|mixed
      */
-    public function send(array $requests)
+    public function send($requests, $timeout = null)
     {
-        $result = [];
-        $total  = count($requests);
-        $chan   = new \Swoole\Coroutine\Channel($total);
+        $requests = (array)$requests;
+        $result   = [];
+        $total    = count($requests);
+        $chan     = new \Swoole\Coroutine\Channel($total);
         foreach ($requests as $key => $request) {
             /** @var  $request \Psr\Http\Message\RequestInterface */
+            /** @var  $psr \Swlib\Saber\Request */
             $psr = $this->httpClient->psr(['use_pool' => true]);
             $psr = $psr->withMethod($request->getMethod());
             $psr = $psr->withUri(new Uri((string)$request->getUri()));
             $psr = $psr->withHeaders($request->getHeaders());
             $psr = $psr->withBody($request->getBody());
+            if ($timeout) {
+                $psr = $psr->withTimeout($timeout);
+            }
             \Swoole\Coroutine::create(function () use ($chan, $key, $psr) {
                 try {
                     $chan->push([$key => $psr->exec()->recv()]);
