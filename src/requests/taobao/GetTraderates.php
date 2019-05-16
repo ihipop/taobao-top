@@ -49,7 +49,7 @@ class GetTraderates extends TopRequest
         'useHasNext',
         'numIid',
     ];
-    public    $encryptedFields      = [
+    public $encryptedFields      = [
         'trade_rates' => [
             '@' => [//订单1
                 'nick' => 'nick',

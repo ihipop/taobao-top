@@ -393,7 +393,6 @@ class SecurityClient
                     'cacheKey'     => $cacheKey,
                 ]);
                 if ($cacheItem instanceof SecretContext && $cacheItem->invalidTime > time()) {
-
                     return $cacheItem;
                 }
                 //如果没顺利return 说明缓存是错的 删掉

@@ -8,15 +8,15 @@ abstract class TopRequest extends BaseRequest
 {
 
     ///----taobao specific--------------
-    public    $requireHttps           = false;//是否必须使用https接口
-    public    $defaultHttpGatewayUri  = "http://gw.api.taobao.com/router/rest";
-    public    $defaultHttpsGatewayUri = "https://eco.taobao.com/router/rest";
+    public $requireHttps           = false;//是否必须使用https接口
+    public $defaultHttpGatewayUri  = "http://gw.api.taobao.com/router/rest";
+    public $defaultHttpsGatewayUri = "https://eco.taobao.com/router/rest";
     protected $paramKeys              = [];
     protected $defaultParamValues     = [];
     protected $commaSeparatedParams   = [];
-    public    $extraParas             = [];
-    public    $encryptedFields;
-    public    $format                 = "json";
+    public $extraParas             = [];
+    public $encryptedFields;
+    public $format                 = "json";
 
     public function __construct()
     {

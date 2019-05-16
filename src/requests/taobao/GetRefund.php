@@ -24,7 +24,7 @@ class GetRefund extends TopRequest
         'refundId',
 
     ];
-    public    $encryptedFields      = [
+    public $encryptedFields      = [
         'refund' => [
             'buyer_nick' => 'name',
         ],

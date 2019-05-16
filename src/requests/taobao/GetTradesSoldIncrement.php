@@ -53,7 +53,7 @@ class GetTradesSoldIncrement extends TopRequest
         'pageNo' => 1,
     ];
     protected $commaSeparatedParams = ['fields', 'type'];
-    public    $encryptedFields      = [
+    public $encryptedFields      = [
         'trades' => [
             '@' => [//订单1
                 'receiver_name'                => 'name',

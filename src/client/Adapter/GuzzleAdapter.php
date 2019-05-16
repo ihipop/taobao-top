@@ -16,7 +16,7 @@ class GuzzleAdapter extends AbstractAdapter
 
     public function __construct(Client $client)
     {
-        $this->httpClient = $client;;
+        $this->httpClient = $client;
         if (class_exists('\Swoole\Coroutine') && $client->getConfig('force_handler_over_ride')) {
             $this->streamHandler = HandlerStack::create(new \GuzzleHttp\Handler\StreamHandler());
         }

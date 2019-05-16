@@ -15,14 +15,14 @@ use ihipop\TaobaoTop\utility\Str;
 class TopClient extends AbstractHttpApiClient
 {
 
-    public    $app;
-    public    $appKey;
-    public    $appSecret;
+    public $app;
+    public $appKey;
+    public $appSecret;
     protected $httpGatewayUri        = "http://gw.api.taobao.com/router/rest";
     protected $httpsGatewayUri       = "https://eco.taobao.com/router/rest";
     protected $httpHostnameOverride  = false;
     protected $httpsHostnameOverride = false;
-    public    $forceHttps            = false;//不管$request如何规定，都使用https
+    public $forceHttps            = false;//不管$request如何规定，都使用https
     protected $signMethod            = "md5";
     protected $sdkVersion            = "top-sdk-php-20151012";
     protected $autoDecrypt           = true;
@@ -300,8 +300,6 @@ class TopClient extends AbstractHttpApiClient
      */
     protected function decryptRequest($response, $fieldsConfig, $session)
     {
-        file_put_contents('aaaaaaaa.txt',var_export($response,2));
-        var_dump($fieldsConfig);
         if (empty($fieldsConfig)) {
             return $response;
         }

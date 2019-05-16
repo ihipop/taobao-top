@@ -35,7 +35,7 @@ class SecurityUtil
     /*
     * 判断是否是base64格式的数据
     */
-    public  function isBase64Str($str)
+    public function isBase64Str($str)
     {
         $strLen = strlen($str);
         for ($i = 0; $i < $strLen; $i++) {
@@ -227,9 +227,9 @@ class SecurityUtil
         $last8Number  = substr($data, $len - 8, $len);
 
         return $separator . $prefixNumber . $separator . Security::encrypt(
-                $last8Number,
-                $secretContext->secret
-            ) . $separator . $secretContext->secretVersion . $separator;
+            $last8Number,
+            $secretContext->secret
+        ) . $separator . $secretContext->secretVersion . $separator;
     }
 
     /*
@@ -299,7 +299,7 @@ class SecurityUtil
              $secretData = $this->getSecretData($data, $separator);
         }
         //return $secretData;
-        if($secretData->originalBase64Value){
+        if ($secretData->originalBase64Value) {
             return $secretData;
         }
         return null;
@@ -540,9 +540,9 @@ class SecurityUtil
         $last4Number = substr($data, $dataLength - 4, $dataLength);
 
         return $separator . $this->hmacMD5EncryptToBase64($last4Number, $secretContext->secret) . $separator . Security::encrypt(
-                $data,
-                $secretContext->secret
-            ) . $separator . $secretContext->secretVersion . $separator . $separator;
+            $data,
+            $secretContext->secret
+        ) . $separator . $secretContext->secretVersion . $separator . $separator;
     }
 
     function encryptNormalIndex($data, $compressLen, $slideSize, $separator, $secretContext)
@@ -554,9 +554,9 @@ class SecurityUtil
         }
 
         return $separator . Security::encrypt(
-                $data,
-                $secretContext->secret
-            ) . $separator . $builder . $separator . $secretContext->secretVersion . $separator . $separator;
+            $data,
+            $secretContext->secret
+        ) . $separator . $builder . $separator . $secretContext->secretVersion . $separator . $separator;
     }
 
     function getArrayValue($array, $key, $default)

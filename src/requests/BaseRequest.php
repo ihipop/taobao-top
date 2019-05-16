@@ -10,13 +10,13 @@ use function GuzzleHttp\Psr7\stream_for;
 abstract class BaseRequest
 {
 
-    public    $method         = 'POST';
-    public    $apiBase        = '';
+    public $method         = 'POST';
+    public $apiBase        = '';
     protected $data;
     protected $query          = [];
-    public    $userAgent      = 'top-sdk-php';
+    public $userAgent      = 'top-sdk-php';
     protected $uriPlaceHolder = [];
-    public    $apiPath        = '{Uri}';
+    public $apiPath        = '{Uri}';
     protected $contentType    = 'form';
     protected $apiName;
     protected $apiVersion     = "2.0";
@@ -27,15 +27,16 @@ abstract class BaseRequest
         return self::psrRequestToString($psrRequest);
     }
 
-    public static function psrRequestToString(\Psr\Http\Message\RequestInterface $psrRequest){
-        $requestString = sprintf("%s %s\r\n",$psrRequest->getMethod(),trim((string)$psrRequest->getUri()));
-        foreach ($psrRequest->getHeaders() as $headerName=>$headerValues){
-            foreach ($headerValues as $headerValue){
-                $requestString .= sprintf("%s: %s\r\n",$headerName,$headerValue);
+    public static function psrRequestToString(\Psr\Http\Message\RequestInterface $psrRequest)
+    {
+        $requestString = sprintf("%s %s\r\n", $psrRequest->getMethod(), trim((string)$psrRequest->getUri()));
+        foreach ($psrRequest->getHeaders() as $headerName => $headerValues) {
+            foreach ($headerValues as $headerValue) {
+                $requestString .= sprintf("%s: %s\r\n", $headerName, $headerValue);
             }
         }
         $requestString .= "\r\n";
-        if($body = $psrRequest->getBody()){
+        if ($body = $psrRequest->getBody()) {
             $requestString .=$body;
         }
         return $requestString;

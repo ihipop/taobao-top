@@ -64,24 +64,24 @@ class SaberAdapter extends AbstractAdapter
         return $result;
     }
 
-    //    public function sendExample2($requests)
-    //    {
-    //        $batch = [];
-    //        foreach ($requests as $key => $request) {
-    //            /** @var  $request \Psr\Http\Message\RequestInterface */
-    //            $psr         = $this->httpClient->psr(['use_pool' => true]);
-    //            $psr         = $psr->withMethod($request->getMethod());
-    //            $psr         = $psr->withUri(new Uri((string)$request->getUri()));
-    //            $psr         = $psr->withHeaders($request->getHeaders());
-    //            $psr         = $psr->withBody($request->getBody());
-    //            $batch[$key] = [
-    //                'uri'     => (string)$psr->getUri(),
-    //                'method'  => $psr->getMethod(),
-    //                'headers' => $psr->getHeaders(),
-    //                'data'    => $psr->getBody(),
-    //            ];
-    //        }
-    //
-    //        return $this->httpClient->requests($batch);
-    //    }
+    public function sendExample2($requests)
+    {
+        $batch = [];
+        foreach ($requests as $key => $request) {
+            /** @var  $request \Psr\Http\Message\RequestInterface */
+            $psr         = $this->httpClient->psr(['use_pool' => true]);
+            $psr         = $psr->withMethod($request->getMethod());
+            $psr         = $psr->withUri(new Uri((string)$request->getUri()));
+            $psr         = $psr->withHeaders($request->getHeaders());
+            $psr         = $psr->withBody($request->getBody());
+            $batch[$key] = [
+                'uri'     => (string)$psr->getUri(),
+                'method'  => $psr->getMethod(),
+                'headers' => $psr->getHeaders(),
+                'data'    => $psr->getBody(),
+            ];
+        }
+
+        return $this->httpClient->requests($batch);
+    }
 }
