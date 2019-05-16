@@ -72,7 +72,7 @@ class Application extends Container implements \Psr\Container\ContainerInterface
     /**
      * @return array
      */
-    public function getConfig(string $key = null)
+    public function getConfig(string $key = null, $default = [])
     {
         $config =& $this->_config;
         if (!$config) {
@@ -98,7 +98,7 @@ class Application extends Container implements \Psr\Container\ContainerInterface
                 'topClient' => [
                     'apiKey'          => '123456',
                     'apiSecret'       => 'qwerty.',
-                    'secureRandomNum' => 'qawsed',
+                    'secureRandomNum' => null,
                 ],
                 'providers' => [
                     'cache'  => NullCacheServiceProvider::class,
@@ -110,7 +110,7 @@ class Application extends Container implements \Psr\Container\ContainerInterface
             $config = array_replace_recursive($base, $this->defaultConfig, $this->userConfig);
         }
         if ($key) {
-            return Arr::get($config, $key, []);
+            return Arr::get($config, $key, $default);
         }
 
         return $config;

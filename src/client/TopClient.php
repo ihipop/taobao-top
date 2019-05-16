@@ -7,7 +7,6 @@ use ihipop\TaobaoTop\Application;
 use ihipop\TaobaoTop\exceptions\AppCallLimitedException;
 use ihipop\TaobaoTop\exceptions\TaobaoTopServerSideException;
 use ihipop\TaobaoTop\exceptions\TokenInvalidException;
-use ihipop\TaobaoTop\requests\taobao\GetTopSecret;
 use ihipop\TaobaoTop\security\SecurityClient;
 use ihipop\TaobaoTop\utility\Arr;
 use ihipop\TaobaoTop\utility\Str;
@@ -42,9 +41,12 @@ class TopClient extends AbstractHttpApiClient
         $adaptor                        = get_class($app->get('httpClientAdapter'));
         $this->accountHttpClientAdapter = (new $adaptor($app->get('httpClientFactory')));
         ///
-
         $this->appKey    = $app->getConfig('topClient.apiKey');
         $this->appSecret = $app->getConfig('topClient.apiSecret');
+        $this->autoDecrypt = $app->getConfig('topClient.autoDecrypt', $this->autoDecrypt);
+        if (!$app->getConfig('topClient.secureRandomNum')) {
+            $this->autoDecrypt=false;
+        }
         $this->logger    = $app->get('logger');
 
         // 执行初始化事件

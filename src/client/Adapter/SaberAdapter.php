@@ -64,7 +64,7 @@ class SaberAdapter extends AbstractAdapter
         return $result;
     }
 
-    public function sendExample2($requests)
+    public function sendExample2($requests, $timeout = null)
     {
         $batch = [];
         foreach ($requests as $key => $request) {
@@ -80,6 +80,9 @@ class SaberAdapter extends AbstractAdapter
                 'headers' => $psr->getHeaders(),
                 'data'    => $psr->getBody(),
             ];
+            if (null !== $timeout) {
+                $batch[$key]['timeout'] = $timeout;
+            }
         }
 
         return $this->httpClient->requests($batch);
