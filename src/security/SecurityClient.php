@@ -118,11 +118,12 @@ class SecurityClient
         if (empty($data) || empty($type)) {
             return $data;
         }
+
         $secretData = $this->securityUtil->getSecretDataByType($data, $type);
-        $this->getLogger()->debug('获得密钥对象', ['secretData' => $secretData]);
         if (empty($secretData)) {
             return $data;
         }
+        $this->getLogger()->debug('获得密钥对象', ['secretData' => $secretData]);
 
         if ($this->securityUtil->isPublicData($data, $type)) {
             $secretContext = $this->getTopSecretWithCache(null, $secretData->secretVersion);

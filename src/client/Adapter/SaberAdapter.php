@@ -37,7 +37,7 @@ class SaberAdapter extends AbstractAdapter
             $psr = $psr->withUri(new Uri((string)$request->getUri()));
             $psr = $psr->withHeaders($request->getHeaders());
             $psr = $psr->withBody($request->getBody());
-            if ($timeout) {
+            if (null !== $timeout) {
                 $psr = $psr->withTimeout($timeout);
             }
             \Swoole\Coroutine::create(function () use ($chan, $key, $psr) {

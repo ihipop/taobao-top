@@ -7,6 +7,7 @@ use ihipop\TaobaoTop\Application;
 use ihipop\TaobaoTop\exceptions\AppCallLimitedException;
 use ihipop\TaobaoTop\exceptions\TaobaoTopServerSideException;
 use ihipop\TaobaoTop\exceptions\TokenInvalidException;
+use ihipop\TaobaoTop\requests\taobao\GetTopSecret;
 use ihipop\TaobaoTop\security\SecurityClient;
 use ihipop\TaobaoTop\utility\Arr;
 use ihipop\TaobaoTop\utility\Str;
@@ -58,6 +59,10 @@ class TopClient extends AbstractHttpApiClient
     }
 
     //LAZY
+
+    /**
+     * @return  SecurityClient
+     */
     public function getSecurityClient()
     {
         return $this->securityClient ?: ($this->securityClient = $this->app->get('security'));
@@ -174,6 +179,7 @@ class TopClient extends AbstractHttpApiClient
                 $hostNameOverRide = $this->httpsHostnameOverride;
             }
             $request->apiPath = $gwUrl;
+
             //签名
             $request->setQuery([
                 'app_key'     => $this->appKey,
@@ -186,7 +192,7 @@ class TopClient extends AbstractHttpApiClient
             $psr7Request = $request->getRequest();
             //            var_export((string)$psr7Request->getBody());
             if ($hostNameOverRide) {
-                $psr7Request = $psr7Request->withHeader('host', $hostNameOverRide);
+                $psr7Request = $psr7Request->withHeader('Host', $hostNameOverRide);
             }
             $psr7Requests[$key] = $psr7Request;
         }

@@ -23,10 +23,22 @@ abstract class BaseRequest
 
     public function __toString()
     {
-        return json_encode([
-            'request_data' => $this->data,
-            'self'         => $this,
-        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        $psrRequest = $this->getRequest();
+        return self::psrRequestToString($psrRequest);
+    }
+
+    public static function psrRequestToString(\Psr\Http\Message\RequestInterface $psrRequest){
+        $requestString = sprintf("%s %s\r\n",$psrRequest->getMethod(),trim((string)$psrRequest->getUri()));
+        foreach ($psrRequest->getHeaders() as $headerName=>$headerValues){
+            foreach ($headerValues as $headerValue){
+                $requestString .= sprintf("%s: %s\r\n",$headerName,$headerValue);
+            }
+        }
+        $requestString .= "\r\n";
+        if($body = $psrRequest->getBody()){
+            $requestString .=$body;
+        }
+        return $requestString;
     }
 
     public function getApiVersion(): string
