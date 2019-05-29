@@ -282,6 +282,10 @@ class TopClient extends AbstractHttpApiClient
             $message .= ': ';
             $message .= $result['sub_msg'];
         }
+
+        if (isset($result['sub_code'])) {
+            $message .= sprintf(' (%s / %s)',$result['code'],$result['sub_code']);
+        }
         $instance = new $class($message, $code);
         if ($instance instanceof TaobaoTopServerSideException) {
             $instance->setSubErrorCode($result['sub_code'] ?? null);
