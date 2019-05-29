@@ -9,6 +9,7 @@ class TaobaoTopServerSideException extends \RuntimeException
 
     protected $responseBody;
 
+
     protected $subErrorMessage;
 
     public function __construct(string $message = "", int $code = 0, \Throwable $previous = null)
@@ -56,5 +57,13 @@ class TaobaoTopServerSideException extends \RuntimeException
         $this->responseBody = $responseBody;
 
         return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getResponseBody()
+    {
+        return $this->responseBody;
     }
 }
