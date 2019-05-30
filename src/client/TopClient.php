@@ -14,14 +14,14 @@ use ihipop\TaobaoTop\utility\Str;
 class TopClient extends AbstractHttpApiClient
 {
 
-    public $app;
-    public $appKey;
-    public $appSecret;
+    public    $app;
+    public    $appKey;
+    public    $appSecret;
     protected $httpGatewayUri        = "http://gw.api.taobao.com/router/rest";
     protected $httpsGatewayUri       = "https://eco.taobao.com/router/rest";
     protected $httpHostnameOverride  = false;
     protected $httpsHostnameOverride = false;
-    public $forceHttps            = false;//不管$request如何规定，都使用https
+    public    $forceHttps            = false;//不管$request如何规定，都使用https
     protected $signMethod            = "md5";
     protected $sdkVersion            = "top-sdk-php-20151012";
     protected $autoDecrypt           = true;
@@ -41,13 +41,13 @@ class TopClient extends AbstractHttpApiClient
         $adaptor                        = get_class($app->get('httpClientAdapter'));
         $this->accountHttpClientAdapter = (new $adaptor($app->get('httpClientFactory')));
         ///
-        $this->appKey    = $app->getConfig('topClient.apiKey');
-        $this->appSecret = $app->getConfig('topClient.apiSecret');
+        $this->appKey      = $app->getConfig('topClient.apiKey');
+        $this->appSecret   = $app->getConfig('topClient.apiSecret');
         $this->autoDecrypt = $app->getConfig('topClient.autoDecrypt', $this->autoDecrypt);
         if (!$app->getConfig('topClient.secureRandomNum')) {
-            $this->autoDecrypt=false;
+            $this->autoDecrypt = false;
         }
-        $this->logger    = $app->get('logger');
+        $this->logger = $app->get('logger');
 
         // 执行初始化事件
         $this->onInitialize();
@@ -261,9 +261,19 @@ class TopClient extends AbstractHttpApiClient
             case 27:
                 return TokenInvalidException::class;
             case 7:
-            case 777:
+            case 520:
+            case 777://自定义 调试用
                 return AppCallLimitedException::class;
             default:
+                if ($subCode && (stripos($subCode, 'isp.') === 0)) {
+                    $subCode = strtolower($subCode);
+                    switch ($subCode) {
+                        case 'isp.call-limited':
+                            return AppCallLimitedException::class;
+                        default:
+                    }
+                }
+
                 return TaobaoTopServerSideException::class;
         }
     }
@@ -284,7 +294,7 @@ class TopClient extends AbstractHttpApiClient
         }
 
         if (isset($result['sub_code'])) {
-            $message .= sprintf(' (%s / %s)',$result['code'],$result['sub_code']);
+            $message .= sprintf(' (%s / %s)', $result['code'], $result['sub_code']);
         }
         $instance = new $class($message, $code);
         if ($instance instanceof TaobaoTopServerSideException) {
