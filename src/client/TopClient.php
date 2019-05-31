@@ -261,7 +261,6 @@ class TopClient extends AbstractHttpApiClient
             case 27:
                 return TokenInvalidException::class;
             case 7:
-            case 520:
             case 777://自定义 调试用
                 return AppCallLimitedException::class;
             default:
