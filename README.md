@@ -46,7 +46,7 @@ composer config prefer-dist true
 安装 
 
 ```bash
-composer require ihipop/taobao-top:~1.0.0
+composer require 'ihipop/taobao-top:~1.0.0'
 ```
 
 # 快速开始
