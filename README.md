@@ -31,7 +31,7 @@
 
 # 安装
 
-本项目正在开发中，你可能需要执行`一次`如下的composer设置才能正常安装开发版
+你可能需要执行`一次`如下的composer设置才能正常安装开发版
 
 ```bash
 composer config prefer-stable true
@@ -47,22 +47,28 @@ composer require ihipop/taobao-top
 
 # 快速开始
 
-## 快速初始化客户端
-除了手动new客户端，我封装了一个简易工厂类
+## 初始化 TOP 客户端
+
 ```php
-$topClient = Factory::guzzleTopClient([
-            'type'         => $tokenType,
-            'logger'       => $logger,//符合PSR日志标准的客户端
-            'cache_client' => $this->cacheClient,//符合PSR16标准的缓存客户端
-        ]);
+$application = new \ihipop\TaobaoTop\Application([
+    'topClient' => [
+        'apiKey'          => '1234567',
+        'apiSecret'       => 'qwerty.',
+        'secureRandomNum' => 'qawsed', // `如果你应用开启了加密 就设置这个 否则请设置为null`
+        'autoDecrypt'     => true, // `同上 如果你应用开启了加密 需要自动解密 就打开这个 否则请关闭,设置为false`
+    ],
+    'providers' => [
+        'http' => \ihipop\TaobaoTop\providers\GuzzleHttpClientServiceProvider::class,
+    ],
+]);
+$topClient   = $application->topClient;
 ```
 
 ## 初始化请求类
 
 以获取订单为例
 ```php
-$request = new GetTradesSold();
-
+$request = new \ihipop\TaobaoTop\requests\taobao\GetTradesSold();
 $request->setFields([
     'post_fee',
     'receiver_name',
@@ -89,8 +95,8 @@ $request->setFields([
     'step',
     'tmall_i18n',
     'nopaid',
-])->setUseHasNext('true')->setPageSize($perPage);
-$request->setStartCreated(date('Y-m-d H:i:s', $startAt))->setEndCreated(date('Y-m-d H:i:s', $endAt));
+])->setUseHasNext('true')->setPageSize(20);
+$request->setStartCreated(date('Y-m-d H:i:s', time() - 5 * 60))->setEndCreated(date('Y-m-d H:i:s'));
 ```
 
 ## 发送请求
@@ -99,9 +105,13 @@ $request->setStartCreated(date('Y-m-d H:i:s', $startAt))->setEndCreated(date('Y-
 $response = $topClient->execute($request, $accessToken)
 ```
 
+# 更多实例 
+
+请查看examples
+
 ## 自动解密
 
-`GetTradesSold` 类已经封装自动解密方法 ，所以上面的Request类出来就是明文字段 
+`GetTradesSold` 类已经封装自动解密方法 ，所以上面的Request类出来就是明文字段 ,如果你的TOP应用不支持加密 请关闭加密
 
 下面对自动解密的配置做出摘要说明
 
