@@ -43,10 +43,10 @@ composer config minimum-stability dev
 composer config prefer-dist true 
 ```
 
-然后
+安装 
 
 ```bash
-composer require ihipop/taobao-top
+composer require ihipop/taobao-top:~1.0.0
 ```
 
 # 快速开始
