@@ -148,9 +148,9 @@ public $encryptedFields = [
 
 ## RAW Request
 如果你应用没开启加密或者请求不涉及加密解密，而且我的预先写的类没覆盖到的，那么你可以使用`RAW Request`简化请求撰写，但是同样的，自动参数联想和自动完成不可用，数组转逗号分割的参数
-也不可以用。
+也不可以用。例如，请求 `alibaba.orp.recommend` 接口
 ```php
-$request = new \ihipop\TaobaoTop\requests\RawTopRequest('alibaba_.orp.recommend')
+$request = new \ihipop\TaobaoTop\requests\RawTopRequest('alibaba.orp.recommend')
 ```
 
 ## 撰写自己的`$request`
