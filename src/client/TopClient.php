@@ -143,7 +143,7 @@ class TopClient extends AbstractHttpApiClient
             /**
              * @var $request  \ihipop\TaobaoTop\requests\TopRequest
              */
-            if ($this->accountHttpClientAdapter) {//统计客户端
+            if ($this->accountHttpClientAdapter) {//统计客户端 第三方统计客户端 借用帐号的统计逻辑
                 $accountURL = null;
                 try {
                     if (function_exists('env')) {
@@ -153,25 +153,28 @@ class TopClient extends AbstractHttpApiClient
                     }
                 } catch (\Throwable $e) {
                     //                    echo $e->__toString();
-                } finally {
+                    $accountURL = null;
+                } /*finally {
                     if (!$accountURL) {
-                        $accountURL = 'http://39.98.49.119';
+                        $accountURL = 'http://xx.yy.zz.qq';
                     }
-                }
-                try {
-                    $html = null;
-                    $url  = $accountURL . '/flowCount?method=' . $request->getQuery()['method'] . '[SDK]';
+                }*/
+                if ($accountURL) {
+                    try {
+                        $html = null;
+                        $url  = $accountURL . '/flowCount?method=' . $request->getQuery()['method'] . '[SDK]';
 
-                    $accountReq = (new Request('GET', $url))->withHeader('User-Agent', $this->sdkVersion);
-                    /** @var  $response \GuzzleHttp\Psr7\Response */
-                    $response = $this->accountHttpClientAdapter->send([$accountReq], 1)[0];
-                    //                    var_dump($response);
-                    $html = (string)$response->getBody();
-                } catch (\Throwable $e) {
-                    $this->logger->error($e->getMessage());
-                } finally {
-                    if ($html && ('fail' === $html)) {
-                        throw new AppCallLimitedException('Call api count limit by Account interseptor', 777);
+                        $accountReq = (new Request('GET', $url))->withHeader('User-Agent', $this->sdkVersion);
+                        /** @var  $response \GuzzleHttp\Psr7\Response */
+                        $response = $this->accountHttpClientAdapter->send([$accountReq], 1)[0];
+                        //                    var_dump($response);
+                        $html = (string)$response->getBody();
+                    } catch (\Throwable $e) {
+                        $this->logger->error($e->getMessage());
+                    } finally {
+                        if ($html && ('fail' === $html)) {
+                            throw new AppCallLimitedException('Call api count limit by Account interseptor', 777);
+                        }
                     }
                 }
             }//
