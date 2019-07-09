@@ -3,7 +3,6 @@
 namespace ihipop\TaobaoTop\security;
 
 use Exception;
-use ihipop\TaobaoTop\exceptions\DecryptErrorException;
 
 class SecurityUtil
 {
@@ -36,7 +35,7 @@ class SecurityUtil
     /*
     * 判断是否是base64格式的数据
     */
-    function isBase64Str($str)
+    public function isBase64Str($str)
     {
         $strLen = strlen($str);
         for ($i = 0; $i < $strLen; $i++) {
@@ -51,7 +50,7 @@ class SecurityUtil
     /*
     * 判断是否是base64格式的字符
     */
-    function isBase64Char($char)
+    public function isBase64Char($char)
     {
         return strpos($this->BASE64_ARRAY, $char) !== false;
     }
@@ -59,7 +58,7 @@ class SecurityUtil
     /*
     * 使用sep字符进行trim
     */
-    function trimBySep($str, $sep)
+    public function trimBySep($str, $sep)
     {
         $start = 0;
         $end   = strlen($str);
@@ -228,9 +227,9 @@ class SecurityUtil
         $last8Number  = substr($data, $len - 8, $len);
 
         return $separator . $prefixNumber . $separator . Security::encrypt(
-                $last8Number,
-                $secretContext->secret
-            ) . $separator . $secretContext->secretVersion . $separator;
+            $last8Number,
+            $secretContext->secret
+        ) . $separator . $secretContext->secretVersion . $separator;
     }
 
     /*
@@ -247,7 +246,8 @@ class SecurityUtil
     function decrypt($data, $type, $secretContext)
     {
         if (!$this->isEncryptData($data, $type)) {
-            throw new DecryptErrorException("数据[" . $data . "]不是类型为[" . $type . "]的加密数据");
+            //app()->log->error("数据[" . $data . "]不是类型为[" . $type . "]的加密数据");
+            return $data;
         }
         $dataLen   = strlen($data);
         $separator = $this->SEPARATOR_CHAR_MAP[$type];
@@ -294,10 +294,15 @@ class SecurityUtil
         $dataLen   = strlen($data);
 
         if ($data[$dataLen - 2] == $separator) {
-            return $secretData = $this->getIndexSecretData($data, $separator);
+             $secretData = $this->getIndexSecretData($data, $separator);
         } else {
-            return $secretData = $this->getSecretData($data, $separator);
+             $secretData = $this->getSecretData($data, $separator);
         }
+        //return $secretData;
+        if ($secretData->originalBase64Value) {
+            return $secretData;
+        }
+        return null;
     }
 
     /*
@@ -535,9 +540,9 @@ class SecurityUtil
         $last4Number = substr($data, $dataLength - 4, $dataLength);
 
         return $separator . $this->hmacMD5EncryptToBase64($last4Number, $secretContext->secret) . $separator . Security::encrypt(
-                $data,
-                $secretContext->secret
-            ) . $separator . $secretContext->secretVersion . $separator . $separator;
+            $data,
+            $secretContext->secret
+        ) . $separator . $secretContext->secretVersion . $separator . $separator;
     }
 
     function encryptNormalIndex($data, $compressLen, $slideSize, $separator, $secretContext)
@@ -549,9 +554,9 @@ class SecurityUtil
         }
 
         return $separator . Security::encrypt(
-                $data,
-                $secretContext->secret
-            ) . $separator . $builder . $separator . $secretContext->secretVersion . $separator . $separator;
+            $data,
+            $secretContext->secret
+        ) . $separator . $builder . $separator . $secretContext->secretVersion . $separator . $separator;
     }
 
     function getArrayValue($array, $key, $default)

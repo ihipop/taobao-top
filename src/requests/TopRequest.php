@@ -4,18 +4,19 @@ namespace ihipop\TaobaoTop\requests;
 
 use ihipop\TaobaoTop\utility\Str;
 
-abstract class TopRequest
+abstract class TopRequest extends BaseRequest
 {
 
-    public    $requireHttps         = false;//是否必须使用https借口
-    protected $paramKeys            = [];
-    protected $defaultParamValues   = [];
-    protected $commaSeparatedParams = [];
-    protected $apiParas             = [];
-    protected $apiName;
-    public    $requestMethod        = 'POST';
-    public    $extraParas           = [];
-    public    $encryptedFields;
+    ///----taobao specific--------------
+    public $requireHttps           = false;//是否必须使用https接口
+    public $defaultHttpGatewayUri  = "http://gw.api.taobao.com/router/rest";
+    public $defaultHttpsGatewayUri = "https://eco.taobao.com/router/rest";
+    protected $paramKeys              = [];
+    protected $defaultParamValues     = [];
+    protected $commaSeparatedParams   = [];
+    public $extraParas             = [];
+    public $encryptedFields;
+    public $format                 = "json";
 
     public function __construct()
     {
@@ -32,7 +33,7 @@ abstract class TopRequest
         }
         if (!empty($this->defaultParamValues)) {
             foreach ($this->defaultParamValues as $para => $value) {
-                $this->apiParas[Str::snake($para)] = (string)$value;
+                $this->data[Str::snake($para)] = (string)$value;
             }
         }
     }
@@ -56,7 +57,7 @@ abstract class TopRequest
         if (in_array($name, $this->commaSeparatedParams)) {
             return $this->setCommaSeparatedParam($name, $value);
         } elseif (in_array($name, $this->paramKeys)) {
-            $this->apiParas[Str::snake($name)] = (string)$value;
+            $this->setData([Str::snake($name) => (string)$value], true);
 
             return $this;
         }
@@ -68,17 +69,9 @@ abstract class TopRequest
         if (in_array($name, $this->commaSeparatedParams)) {
             return $this->getCommaSeparatedParam($name);
         } elseif (in_array($name, $this->paramKeys)) {
-            return $this->apiParas[Str::snake($name)] ?? null;
+            return $this->data[Str::snake($name)] ?? null;
         }
         throw new \Exception('指定属性不存在: ' . $name);
-    }
-
-    public function __toString()
-    {
-        return json_encode([
-            'request_para' => $this->getRequestParas(),
-            'self'         => $this,
-        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     }
 
     public function setCommaSeparatedParam($name, $value)
@@ -86,14 +79,14 @@ abstract class TopRequest
         if (is_array($value)) {
             $value = implode(',', $value);
         }
-        $this->apiParas[$name] = $value;
+        $this->setData([$name => $value], true);
 
         return $this;
     }
 
     public function getCommaSeparatedParam($name)
     {
-        $values = $this->apiParas[$name] ?? '';
+        $values = $this->data[$name] ?? '';
 
         return array_filter(explode(',', $values));
     }
@@ -108,12 +101,16 @@ abstract class TopRequest
         return $this->setCommaSeparatedParam($name, array_merge((array)$originalFields, $value));
     }
 
-    public function setSession($session)
+    public function setSession(string $session)
     {
         if (!is_string($session)) {
-            unset($this->extraParas['session']);
+            unset($this->data['session']);
         } else {
-            $this->extraParas['session'] = $session;
+            if ($this->method === 'GET' || $this->method === 'HEAD') {
+                $this->setQuery(['session' => $session], true);
+            } else {
+                $this->setData(['session' => $session], true);
+            }
         }
 
         return $this;
@@ -121,44 +118,53 @@ abstract class TopRequest
 
     public function getSession()
     {
-        return $this->extraParas['session'] ?? null;
+        return $this->data['session'] ?? null;
     }
 
-    public function getApiName()
+    public function getAccessToken()
     {
-        return $this->apiName;
+        return $this->getSession();
     }
 
-    public function setApiName($name)
+    public function setAccessToken($accessToken)
     {
-        $this->apiName = $name;
-
-        return $this;
+        return $this->setSession($accessToken);
     }
 
-    public function getApiParas()
+    public function getQuery()
     {
-        return $this->apiParas;
+        $query = parent::getQuery();
+
+        return array_merge(is_array($query) ? $query : [], [
+            'v'      => $this->apiVersion,
+            'format' => $this->format,
+            'method' => $this->getApiName(),
+            //            'timestamp' => date("Y-m-d H:i:s"),
+        ]);
+    }
+
+    public function getData()
+    {
+        $data = parent::getData();
+
+        return (array)$data;
+    }
+
+    public function getApiPath()
+    {
+        if ($this->requireHttps) {
+            $this->uriPlaceHolder['Uri'] = $this->defaultHttpsGatewayUri;
+        } else {
+            $this->uriPlaceHolder['Uri'] = $this->defaultHttpGatewayUri;
+        }
+
+        return parent::getApiPath();
     }
 
     public function setSign($sign)
     {
-        $this->extraParas["sign"] = $sign;
+        $this->setQuery(['sign' => $sign], true);
 
         return $this;
-    }
-
-    public function getRequestParas()
-    {
-        return array_merge((array)$this->extraParas, (array)$this->apiParas);
-    }
-
-    public function checkPayload()
-    {
-        if (!($this->extraParas["sign"] ?? true)) {
-            throw new \Exception('Sign is not set');
-        }
-
-        return true;
     }
 }
